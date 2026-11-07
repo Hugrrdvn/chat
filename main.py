@@ -19,9 +19,7 @@ class Message(db.Model):
     username = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     avatar = db.Column(db.Text, nullable=True)
-    timestamp = db.Column(
-        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
-    )
+    timestamp = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
     def to_dict(self):
         return {
@@ -30,6 +28,19 @@ class Message(db.Model):
             "text": self.content,
             "avatar": self.avatar or "https://i.imgur.com/6VBx3io.png",
             "time": self.timestamp.timestamp(),
+        }
+
+class Member(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    avatar = db.Column(db.Text, nullable=True)
+    last_seen = db.Column(db.Float, nullable=False)
+
+    def to_dict(self):
+        return {
+            "username": self.username,
+            "avatar": self.avatar or "https://i.imgur.com/6VBx3io.png",
+            "online": (time.time() - self.last_seen) < 60
         }
 
 with app.app_context():
@@ -43,11 +54,26 @@ def home():
 def check_name():
     data = request.get_json(silent=True) or {}
     username = str(data.get("user", "")).strip()
+    avatar = data.get("avatar", "")
 
     if len(username) < 3 or len(username) >= 10:
         return jsonify({"taken": True, "error": "طول الاسم غير مسموح"})
 
+    member = Member.query.filter_by(username=username).first()
+    if member:
+        member.avatar = avatar if avatar else member.avatar
+        member.last_seen = time.time()
+    else:
+        new_member = Member(username=username, avatar=avatar, last_seen=time.time())
+        db.session.add(new_member)
+    db.session.commit()
+
     return jsonify({"taken": False})
+
+@app.route("/members", methods=["GET"])
+def get_members():
+    members = Member.query.all()
+    return jsonify([m.to_dict() for m in members])
 
 @app.route("/messages", methods=["GET"])
 def get_messages():
@@ -67,12 +93,14 @@ def send_message():
     unique_id = str(time.time())
     new_msg = Message(msg_id=unique_id, username=username, content=content, avatar=avatar)
     db.session.add(new_msg)
+    
+    member = Member.query.filter_by(username=username).first()
+    if member:
+        member.last_seen = time.time()
+    
     db.session.commit()
 
-    return jsonify({
-        "status": "success",
-        "data": new_msg.to_dict(),
-    }), 201
+    return jsonify({"status": "success", "data": new_msg.to_dict()}), 201
 
 @app.route("/edit", methods=["POST"])
 def edit_message():
