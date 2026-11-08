@@ -1,137 +1,129 @@
-import os
+from flask import Flask, jsonify, render_template, request
+import sqlite3
 import time
-from datetime import datetime, timezone
-from flask import Flask, jsonify, request, send_from_directory
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
 
-app = Flask(__name__, static_folder=".", static_url_path="")
-CORS(app)
+app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///chat_messages.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db = SQLAlchemy(app)
+# تهيئة قاعدة البيانات SQLite
+def init_db():
+  conn = sqlite3.connect("chat_messages.db")
+  cursor = conn.cursor()
+  # جدول الرسائل
+  cursor.execute("""
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user TEXT,
+            text TEXT,
+            avatar TEXT,
+            time REAL
+        )
+    """)
+  # جدول الأعضاء والنشاط
+  cursor.execute("""
+        CREATE TABLE IF NOT EXISTS members (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            avatar TEXT,
+            online INTEGER,
+            last_seen REAL
+        )
+    """)
+  conn.commit()
+  conn.close()
 
-class Message(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    msg_id = db.Column(db.String(50), unique=True, nullable=False)
-    username = db.Column(db.String(100), nullable=False)
-    content = db.Column(db.Text, nullable=False)
-    avatar = db.Column(db.Text, nullable=True)
-    reactions = db.Column(db.String(500), nullable=True, default="{}")
-    timestamp = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
-    def to_dict(self):
-        import json
-        return {
-            "id": self.msg_id,
-            "user": self.username,
-            "text": self.content,
-            "avatar": self.avatar or "https://i.imgur.com/6VBx3io.png",
-            "reactions": json.loads(self.reactions or "{}"),
-            "time": self.timestamp.strftime("%I:%M %p"),
-        }
+init_db()
 
-class Member(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True, nullable=False)
-    avatar = db.Column(db.Text, nullable=True)
-    last_seen = db.Column(db.Float, nullable=False)
-
-    def to_dict(self):
-        return {
-            "username": self.username,
-            "avatar": self.avatar or "https://i.imgur.com/6VBx3io.png",
-            "online": (time.time() - self.last_seen) < 15
-        }
-
-with app.app_context():
-    db.create_all()
 
 @app.route("/")
-def home():
-    return send_from_directory(".", "index.html")
+def index():
+  return render_template("index.html")
 
-@app.route("/check-name", methods=["POST"])
-def check_name():
-    data = request.get_json(silent=True) or {}
-    username = str(data.get("user", "")).strip()
-    avatar = data.get("avatar", "")
-
-    if len(username) < 3 or len(username) >= 10:
-        return jsonify({"taken": True, "error": "طول الاسم غير مسموح"})
-
-    member = Member.query.filter_by(username=username).first()
-    if member:
-        member.avatar = avatar if avatar else member.avatar
-        member.last_seen = time.time()
-    else:
-        new_member = Member(username=username, avatar=avatar, last_seen=time.time())
-        db.session.add(new_member)
-    db.session.commit()
-
-    return jsonify({"taken": False})
-
-@app.route("/heartbeat", methods=["POST"])
-def heartbeat():
-    data = request.get_json(silent=True) or {}
-    username = str(data.get("user", "")).strip()
-    if username:
-        member = Member.query.filter_by(username=username).first()
-        if member:
-            member.last_seen = time.time()
-            db.session.commit()
-    return jsonify({"status": "ok"})
-
-@app.route("/members", methods=["GET"])
-def get_members():
-    members = Member.query.all()
-    return jsonify([m.to_dict() for m in members])
 
 @app.route("/messages", methods=["GET"])
 def get_messages():
-    messages = Message.query.order_by(Message.timestamp.asc()).limit(500).all()
-    return jsonify([msg.to_dict() for msg in messages])
+  conn = sqlite3.connect("chat_messages.db")
+  cursor = conn.cursor()
+  cursor.execute("SELECT id, user, text, avatar, time FROM messages")
+  rows = cursor.fetchall()
+  conn.close()
+
+  messages = []
+  for row in rows:
+    messages.append({
+        "id": row[0],
+        "user": row[1],
+        "text": row[2],
+        "avatar": row[3],
+        "time": row[4],
+    })
+  return jsonify(messages)
+
 
 @app.route("/send", methods=["POST"])
 def send_message():
-    data = request.get_json(silent=True) or {}
-    username = str(data.get("user", "")).strip()
-    content = str(data.get("text", "")).strip()
-    avatar = data.get("avatar", "")
+  data = request.json
+  user = data.get("user")
+  text = data.get("text")
+  avatar = data.get(
+      "avatar", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900"
+  )
+  msg_time = time.time()
 
-    if not username or not content:
-        return jsonify({"error": "الاسم والرسالة مطلوبان."}), 400
+  if not text or not user:
+    return jsonify({"error": "Missing data"}), 400
 
-    unique_id = str(time.time())
-    new_msg = Message(msg_id=unique_id, username=username, content=content, avatar=avatar, reactions="{}")
-    db.session.add(new_msg)
-    
-    member = Member.query.filter_by(username=username).first()
-    if member:
-        member.last_seen = time.time()
-    
-    db.session.commit()
-    return jsonify({"status": "success", "data": new_msg.to_dict()}), 201
+  conn = sqlite3.connect("chat_messages.db")
+  cursor = conn.cursor()
+  cursor.execute(
+      "INSERT INTO messages (user, text, avatar, time) VALUES (?, ?, ?, ?)",
+      (user, text, avatar, msg_time),
+  )
+  conn.commit()
+  conn.close()
+  return jsonify({"status": "success"})
 
-@app.route("/react", methods=["POST"])
-def react_message():
-    import json
-    data = request.get_json(silent=True) or {}
-    msg_id = data.get("id")
-    emoji = data.get("emoji")
-    username = data.get("user")
 
-    msg = Message.query.filter_by(msg_id=msg_id).first()
-    if msg:
-        reactions = json.loads(msg.reactions or "{}")
-        reactions[username] = emoji
-        msg.reactions = json.dumps(reactions)
-        db.session.commit()
-        return jsonify({"success": True})
+@app.route("/check-name", methods=["POST"])
+def check_name():
+  data = request.json
+  username = data.get("user")
+  avatar = data.get("avatar")
+  current_time = time.time()
 
-    return jsonify({"success": False})
+  conn = sqlite3.connect("chat_messages.db")
+  cursor = conn.cursor()
+  cursor.execute(
+      "INSERT OR REPLACE INTO members (username, avatar, online, last_seen)"
+      " VALUES (?, ?, 1, ?)",
+      (username, avatar, current_time),
+  )
+  conn.commit()
+  conn.close()
+  return jsonify({"status": "ok"})
+
+
+@app.route("/members", methods=["GET"])
+def get_members():
+  conn = sqlite3.connect("chat_messages.db")
+  cursor = conn.cursor()
+  cursor.execute("SELECT username, avatar, online, last_seen FROM members")
+  rows = cursor.fetchall()
+  conn.close()
+
+  members = []
+  current_time = time.time()
+  for row in rows:
+    # اعتبار العضو متصلاً إذا كان نشطاً خلال آخر دقيقتين
+    is_online = 1 if (current_time - row[3] < 120) else 0
+    members.append({
+        "username": row[0],
+        "avatar": row[1],
+        "online": is_online,
+    })
+  return jsonify(members)
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
+  app.run(host="0.0.0.0", port=8080, debug=True)
