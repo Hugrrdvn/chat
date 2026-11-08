@@ -19,14 +19,17 @@ class Message(db.Model):
     username = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     avatar = db.Column(db.Text, nullable=True)
+    reactions = db.Column(db.String(500), nullable=True, default="{}")
     timestamp = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
     def to_dict(self):
+        import json
         return {
             "id": self.msg_id,
             "user": self.username,
             "text": self.content,
             "avatar": self.avatar or "https://i.imgur.com/6VBx3io.png",
+            "reactions": json.loads(self.reactions or "{}"),
             "time": self.timestamp.timestamp(),
         }
 
@@ -40,7 +43,7 @@ class Member(db.Model):
         return {
             "username": self.username,
             "avatar": self.avatar or "https://i.imgur.com/6VBx3io.png",
-            "online": (time.time() - self.last_seen) < 60
+            "online": (time.time() - self.last_seen) < 15
         }
 
 with app.app_context():
@@ -70,6 +73,17 @@ def check_name():
 
     return jsonify({"taken": False})
 
+@app.route("/heartbeat", methods=["POST"])
+def heartbeat():
+    data = request.get_json(silent=True) or {}
+    username = str(data.get("user", "")).strip()
+    if username:
+        member = Member.query.filter_by(username=username).first()
+        if member:
+            member.last_seen = time.time()
+            db.session.commit()
+    return jsonify({"status": "ok"})
+
 @app.route("/members", methods=["GET"])
 def get_members():
     members = Member.query.all()
@@ -91,7 +105,7 @@ def send_message():
         return jsonify({"error": "الاسم والرسالة مطلوبان."}), 400
 
     unique_id = str(time.time())
-    new_msg = Message(msg_id=unique_id, username=username, content=content, avatar=avatar)
+    new_msg = Message(msg_id=unique_id, username=username, content=content, avatar=avatar, reactions="{}")
     db.session.add(new_msg)
     
     member = Member.query.filter_by(username=username).first()
@@ -99,23 +113,25 @@ def send_message():
         member.last_seen = time.time()
     
     db.session.commit()
-
     return jsonify({"status": "success", "data": new_msg.to_dict()}), 201
 
-@app.route("/edit", methods=["POST"])
-def edit_message():
+@app.route("/react", methods=["POST"])
+def react_message():
+    import json
     data = request.get_json(silent=True) or {}
     msg_id = data.get("id")
-    new_text = str(data.get("text", "")).strip()
+    emoji = data.get("emoji")
     username = data.get("user")
 
-    msg = Message.query.filter_by(msg_id=msg_id, username=username).first()
+    msg = Message.query.filter_by(msg_id=msg_id).first()
     if msg:
-        msg.content = new_text + " (معدلة)"
+        reactions = json.loads(msg.reactions or "{}")
+        reactions[username] = emoji
+        msg.reactions = json.dumps(reactions)
         db.session.commit()
         return jsonify({"success": True})
 
-    return jsonify({"success": False, "error": "غير مسموح بالتعديل"})
+    return jsonify({"success": False})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
