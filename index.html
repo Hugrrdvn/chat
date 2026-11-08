@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>جروب تعارف ودردشة - التصميم الملكي</title>
+<title>جروب تعارف ودردشة - التصميم الملكي بالخلفية الثلجية الكاملة</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
 body { 
@@ -24,7 +24,10 @@ body {
 body::before {
     content: '';
     position: absolute;
-    top: 4px; bottom: 4px; left: 4px; right: 4px;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    right: 4px;
     border: 2px solid;
     border-image: linear-gradient(135deg, #0f8f3c, #000000, #0f8f3c) 1;
     pointer-events: none;
@@ -32,114 +35,7 @@ body::before {
     box-shadow: inset 0 0 15px rgba(15, 143, 60, 0.4), 0 0 10px rgba(0, 0, 0, 0.8);
 }
 
-/* ==========================================
-   شاشة تسجيل الدخول (تظهر أولاً)
-   ========================================== */
-#login-screen {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.login-card {
-    width: 90%;
-    max-width: 360px;
-    background: #ffffff;
-    padding: 25px 20px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    border: 1.5px solid #0f8f3c;
-}
-
-.login-card h2 {
-    font-size: 20px;
-    color: #000;
-    font-weight: 900;
-}
-
-.input-group {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    text-align: right;
-}
-
-.input-group label {
-    font-size: 13px;
-    font-weight: bold;
-    color: #333;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    outline: none;
-    font-size: 14px;
-}
-
-.avatar-selector {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 5px;
-}
-
-.avatar-option {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: 0.2s;
-}
-
-.avatar-option.selected {
-    border-color: #0f8f3c;
-    transform: scale(1.1);
-}
-
-.start-chat-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #0f8f3c, #095222);
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-    box-shadow: 0 4px 10px rgba(15,143,60,0.4);
-}
-
-/* زر تعديل الملف الشخصي داخل الشات */
-.edit-profile-trigger {
-    background: rgba(15, 143, 60, 0.2);
-    border: 1px solid #0f8f3c;
-    color: #2ecc71;
-    padding: 2px 8px;
-    border-radius: 8px;
-    font-size: 10px;
-    cursor: pointer;
-    margin-right: 5px;
-    font-weight: bold;
-}
-
-/* ==========================================
-   تصميم واجهة الشات الأصلية
-   ========================================== */
+/* حاوية الكبسولة العلوية (متقدمة وبارزة بشكل رائع ومثبتة المقاسات) */
 .header-wrapper {
     width: 88%;
     max-width: 380px;
@@ -150,6 +46,7 @@ body::before {
     margin-top: 2px;
 }
 
+/* الكبسولة العلوية لعنوان الجروب */
 .telegram-header-box {
     width: 100%;
     background: #ffffff; 
@@ -205,6 +102,7 @@ body::before {
     flex-shrink: 0;
 }
 
+/* شارة النشيطين */
 .external-active-badge {
     align-self: flex-start;
     background-color: rgba(15, 143, 60, 0.2);
@@ -220,6 +118,7 @@ body::before {
     gap: 4px;
 }
 
+/* خط فاصل أنيق بين عنوان الجروب ومنطقة الرسائل */
 .chat-divider {
     width: 88%;
     max-width: 380px;
@@ -229,6 +128,9 @@ body::before {
     z-index: 10;
 }
 
+/* ==========================================
+   منطقة الرسائل وتنسيق المحتوى الثابت
+   ========================================== */
 .chat-messages-container {
     flex: 1;
     width: 88%;
@@ -302,6 +204,9 @@ body::before {
     margin-top: 0px;
 }
 
+/* ==========================================
+   شريط إدخال الرسائل السفلي
+   ========================================== */
 .chat-input-bar {
     width: 88%;
     max-width: 380px;
@@ -353,12 +258,16 @@ body::before {
     box-shadow: 0 2px 8px rgba(15,143,60,0.4);
 }
 
-/* واجهة معلومات الجروب */
+/* ==========================================
+   واجهة معلومات الجروب (عند النقر)
+   ========================================== */
 #group-profile-modal {
     display: none; 
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-color: #eef1f5; 
     z-index: 1000;
     overflow-y: auto;
@@ -515,31 +424,6 @@ body::before {
 </head>
 <body>
 
-<!-- شاشة تسجيل الدخول وتعديل الاسم والصورة قبل الدخول للشات -->
-<div id="login-screen">
-    <div class="login-card">
-        <h2>تسجيل الدخول للدردشة</h2>
-        <p style="font-size: 12px; color: #666; text-align: center;">قم بتعديل اسمك واختيار صورتك الشخصية لتظهر داخل الجروب</p>
-
-        <div class="input-group">
-            <label>اسمك المستعار:</label>
-            <input type="text" id="usernameInput" placeholder="اكتب اسمك هنا..." value="أحمد محمد">
-        </div>
-
-        <div class="input-group">
-            <label>اختر صورتك الشخصية:</label>
-            <div class="avatar-selector">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" class="avatar-option selected" onclick="selectAvatar(this)">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900" class="avatar-option" onclick="selectAvatar(this)">
-                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=900" class="avatar-option" onclick="selectAvatar(this)">
-                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900" class="avatar-option" onclick="selectAvatar(this)">
-            </div>
-        </div>
-
-        <button class="start-chat-btn" onclick="saveAndEnterChat()">دخول إلى الشات 🚀</button>
-    </div>
-</div>
-
 <!-- الكبسولة العلوية للشات -->
 <div class="header-wrapper">
     <div class="telegram-header-box">
@@ -554,11 +438,10 @@ body::before {
 
     <div class="external-active-badge">
         <span>●</span> <span>119 متصلاً</span>
-        <button class="edit-profile-trigger" onclick="openLoginScreen()">تعديل الاسم/الصورة</button>
     </div>
 </div>
 
-<!-- خط فاصل -->
+<!-- خط فاصل بين عنوان الجروب ومنطقة الرسائل -->
 <div class="chat-divider"></div>
 
 <!-- منطقة الرسائل -->
@@ -573,9 +456,9 @@ body::before {
     </div>
 
     <div class="message-row outgoing">
-        <img class="msg-avatar" id="myMessageAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" alt="صورتك">
+        <img class="msg-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" alt="صورتك">
         <div class="message-bubble">
-            <span class="msg-sender" id="myMessageSender" style="color: #0f8f3c;">أحمد محمد (أنت)</span>
+            <span class="msg-sender" style="color: #0f8f3c;">أحمد محمد (أنت)</span>
             <span class="msg-text">منورين الجروب الملكي ✨</span>
             <span class="msg-time">٩:٣٠ ص</span>
         </div>
@@ -617,7 +500,7 @@ body::before {
     <button class="send-btn">➤</button>
 </div>
 
-<!-- واجهة معلومات الجروب -->
+<!-- واجهة معلومات الجروب (تفتح عند النقر) -->
 <div id="group-profile-modal">
     <div class="profile-top-bar">
         <button class="profile-back-btn" onclick="closeProfile()">←</button>
@@ -660,9 +543,9 @@ body::before {
 
     <div class="members-list-container">
         <div class="member-item">
-            <img class="member-avatar" id="myMemberListAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" alt="عضو">
+            <img class="member-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" alt="عضو">
             <div class="member-details">
-                <span class="member-name" id="myMemberListName">أحمد محمد (أنت)</span>
+                <span class="member-name">أحمد محمد (أنت)</span>
                 <span class="member-status online">متصل</span>
                 <div class="owner-badge" style="margin-top: 2px;">المالك</div>
             </div>
@@ -687,58 +570,6 @@ body::before {
 </div>
 
 <script>
-let selectedAvatarUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900";
-
-function selectAvatar(imgElement) {
-    document.querySelectorAll('.avatar-option').forEach(img => img.classList.remove('selected'));
-    imgElement.classList.add('selected');
-    selectedAvatarUrl = imgElement.src;
-}
-
-function saveAndEnterChat() {
-    const username = document.getElementById('usernameInput').value.trim();
-    if(!username) {
-        alert('الرجاء إدخال الاسم!');
-        return;
-    }
-    
-    // حفظ البيانات في المتصفح
-    localStorage.setItem('chat_username', username);
-    localStorage.setItem('chat_avatar', selectedAvatarUrl);
-    
-    // تطبيق البيانات مباشرة على الشات وإخفاء شاشة تسجيل الدخول
-    applyUserData();
-    document.getElementById('login-screen').style.display = 'none';
-}
-
-function openLoginScreen() {
-    document.getElementById('login-screen').style.display = 'flex';
-}
-
-function applyUserData() {
-    const savedName = localStorage.getItem('chat_username');
-    const savedAvatar = localStorage.getItem('chat_avatar');
-
-    if(savedName) {
-        document.getElementById('myMessageSender').innerText = savedName + ' (أنت)';
-        document.getElementById('myMemberListName').innerText = savedName + ' (أنت)';
-        document.getElementById('usernameInput').value = savedName;
-    }
-
-    if(savedAvatar) {
-        document.getElementById('myMessageAvatar').src = savedAvatar;
-        document.getElementById('myMemberListAvatar').src = savedAvatar;
-    }
-}
-
-// التحقق عند تحميل الصفحة إذا كان قد سجل من قبل
-window.addEventListener('DOMContentLoaded', () => {
-    if(localStorage.getItem('chat_username')) {
-        applyUserData();
-        document.getElementById('login-screen').style.display = 'none'; // تخطي شاشة الدخول إذا سجل مسبقاً
-    }
-});
-
 function openProfile() {
     document.getElementById('group-profile-modal').style.display = 'flex';
 }
@@ -749,3 +580,4 @@ function closeProfile() {
 
 </body>
 </html>
+
