@@ -30,7 +30,7 @@ class Message(db.Model):
             "text": self.content,
             "avatar": self.avatar or "https://i.imgur.com/6VBx3io.png",
             "reactions": json.loads(self.reactions or "{}"),
-            "time": self.timestamp.timestamp(),
+            "time": self.timestamp.strftime("%I:%M %p"),
         }
 
 class Member(db.Model):
