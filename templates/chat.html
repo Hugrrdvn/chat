@@ -3,14 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>جروب تعارف ودردشة - التصميم الملكي الثابت</title>
+<title>جروب تعارف ودردشة الملكي | الدردشة الرسمية</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
 
 html, body {
     height: 100%;
     width: 100%;
     overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 body { 
@@ -22,49 +24,56 @@ body {
     flex-direction: column;
     align-items: center; 
     justify-content: flex-start;
-    padding: 8px 0;
+    padding: 10px 0 16px 0;
     position: relative;
 }
 
-/* الإطار الملكي الكامل المحيط بالشاشة من الجهات الأربع بشكل ثابت تماماً */
+/* إطار ملكي فخم جداً ومزدوج يحيط بالشاشة */
 body::before {
     content: '';
     position: fixed;
-    top: 4px;
-    bottom: 4px;
-    left: 4px;
-    right: 4px;
-    border: 2px solid;
-    border-image: linear-gradient(135deg, #0f8f3c, #000000, #0f8f3c) 1;
+    top: 6px; bottom: 6px; left: 6px; right: 6px;
+    border: 2.5px solid #d4af37;
     pointer-events: none;
     z-index: 100;
-    box-shadow: inset 0 0 15px rgba(15, 143, 60, 0.4), 0 0 10px rgba(0, 0, 0, 0.8);
+    box-shadow: inset 0 0 30px rgba(212, 175, 55, 0.5), 0 0 25px rgba(0, 0, 0, 0.95);
+    border-radius: 18px;
 }
 
-/* حاوية الكبسولة العلوية (مثبتة المساحة تماماً ومنع تداخل العناصر) */
+body::after {
+    content: '';
+    position: fixed;
+    top: 11px; bottom: 11px; left: 11px; right: 11px;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    pointer-events: none;
+    z-index: 100;
+    border-radius: 14px;
+}
+
+/* حاوية الرأس العلوية الملكية */
 .header-wrapper {
-    width: 88%;
-    max-width: 380px;
+    width: 90%;
+    max-width: 390px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     position: relative;
     z-index: 10;
-    margin-top: 2px;
+    margin-top: 10px;
 }
 
-/* الكبسولة العلوية لعنوان الجروب */
 .telegram-header-box {
     width: 100%;
-    background: #ffffff; 
-    color: #000000;
+    background: rgba(12, 12, 12, 0.94);
+    backdrop-filter: blur(12px);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 10px 16px;
-    border-radius: 25px; 
-    border: 1.5px solid rgba(28, 56, 94, 0.4);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8), 0 0 10px rgba(15, 143, 60, 0.5);
+    border-radius: 22px; 
+    border: 1.5px solid #d4af37;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.3);
 }
 
 .th-right {
@@ -75,96 +84,100 @@ body::before {
 }
 
 .th-avatar {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
 }
 
 .th-info {
     display: flex;
     flex-direction: column;
     flex: 1;
-    text-align: center;
-    transform: translateX(12px);
+    text-align: right;
+    margin-right: 10px;
     min-width: 0;
     cursor: pointer;
 }
 
 .th-info h3 {
-    font-size: 19.5px; 
+    font-size: 16.5px; 
     font-weight: 900;
-    color: #000000;
+    color: #ffd700;
     white-space: nowrap; 
     overflow: hidden;    
     text-overflow: ellipsis; 
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
 
 .th-left {
-    font-size: 16px;
-    color: #707579;
+    font-size: 18px;
+    color: #ffd700;
     cursor: pointer;
-    padding: 4px;
+    padding: 6px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.1);
     flex-shrink: 0;
+    border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
-/* شارة النشيطين مع علامة النبض الأخضر بشكل رائع */
+/* شارة النشيطين مع نبض ذهبي فاخر */
 .external-active-badge {
     align-self: flex-start;
-    background-color: rgba(15, 143, 60, 0.2);
-    border: 1.2px solid #0f8f3c;
-    color: #2ecc71;
+    background-color: rgba(12, 12, 12, 0.85);
+    border: 1.2px solid #d4af37;
+    color: #ffd700;
     font-size: 11px;
     font-weight: 700;
-    padding: 2px 10px;
-    border-radius: 10px;
+    padding: 3px 12px;
+    border-radius: 12px;
     margin-top: 6px;
+    margin-bottom: 4px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    box-shadow: 0 0 8px rgba(46, 204, 113, 0.3);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
 }
 
 .pulse-dot {
-    width: 8px;
-    height: 8px;
-    background-color: #2ecc71;
+    width: 7px;
+    height: 7px;
+    background-color: #10b981;
     border-radius: 50%;
     display: inline-block;
-    box-shadow: 0 0 6px #2ecc71;
+    box-shadow: 0 0 8px #10b981;
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
     0% { transform: scale(0.95); opacity: 0.8; }
-    50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 10px #2ecc71; }
+    50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px #10b981; }
     100% { transform: scale(0.95); opacity: 0.8; }
 }
 
-/* خط فاصل أنيق */
 .chat-divider {
-    width: 88%;
-    max-width: 380px;
+    width: 90%;
+    max-width: 390px;
     height: 1px;
-    background: linear-gradient(to right, transparent, rgba(15, 143, 60, 0.6), transparent);
-    margin: 8px 0;
+    background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.6), transparent);
+    margin: 4px 0;
     flex-shrink: 0;
     z-index: 10;
 }
 
-/* ==========================================
-   منطقة الرسائل الثابتة والمنظمة
-   ========================================== */
+/* منطقة الرسائل */
 .chat-messages-container {
     flex: 1;
-    width: 88%;
-    max-width: 380px;
+    width: 90%;
+    max-width: 390px;
     overflow-y: auto;
-    padding: 5px 2px;
+    padding: 6px 2px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px; 
     z-index: 10;
     scroll-behavior: smooth;
 }
@@ -172,8 +185,9 @@ body::before {
 .message-row {
     display: flex;
     align-items: flex-end;
-    gap: 10px;
-    max-width: 90%;
+    gap: 8px;
+    max-width: 80%;
+    cursor: pointer;
 }
 
 .message-row.incoming {
@@ -181,79 +195,221 @@ body::before {
     flex-direction: row;
 }
 
+.message-row.incoming .message-bubble {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1.2px solid #d4af37;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+    border-bottom-left-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
 .message-row.outgoing {
     align-self: flex-end;
     flex-direction: row-reverse;
 }
 
+.message-row.outgoing .message-bubble {
+    background: linear-gradient(135deg, rgba(15, 30, 15, 0.96), rgba(10, 20, 10, 0.96));
+    border: 1.5px solid #d4af37;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 14px;
+    border-bottom-left-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), inset 0 0 12px rgba(212, 175, 55, 0.2);
+}
+
+.message-row.outgoing .msg-text {
+    color: #ffffff;
+}
+
 .msg-avatar {
-    width: 34px;
-    height: 34px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    border: 1.5px solid #d4af37;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
 
 .message-bubble {
-    background: #ffffff; 
-    border-radius: 10px;
-    padding: 6px 12px; 
-    min-width: 80px;
+    border-radius: 14px;
+    padding: 5px 10px 5px 10px; 
     width: fit-content;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0,0,0,0.6); 
+    min-width: 75px; 
+    max-width: 250px; 
     display: flex;
     flex-direction: column;
     position: relative;
 }
 
 .msg-sender {
-    font-size: 11px;
-    font-weight: bold;
-    color: #2481cc;
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #d4af37;
     margin-bottom: 2px;
 }
 
+.message-row.incoming .msg-sender {
+    color: #1a5c32;
+}
+
 .msg-text {
-    font-size: 16px;
-    font-weight: 800;
+    font-size: 13.5px;
+    font-weight: 600;
     color: #000000;
     line-height: 1.35;
     word-break: break-word;
 }
 
-.msg-time {
-    font-size: 9px;
-    color: #555555;
-    align-self: flex-end;
-    margin-top: 2px;
+.msg-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 1px;
 }
 
-/* ==========================================
-   شريط إدخال الرسائل السفلي
-   ========================================== */
+.msg-time {
+    font-size: 8px;
+    color: #a0a0a0;
+}
+
+.message-row.incoming .msg-time {
+    color: #707579;
+}
+
+/* علامات الصح الحقيقية تماماً مثل واتساب */
+.msg-ticks {
+    font-size: 11px;
+    font-weight: 900;
+    color: #707579;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.msg-ticks.seen {
+    color: #00e676 !important;
+    text-shadow: 0 0 6px rgba(0, 230, 118, 0.6);
+}
+
+/* رسالة النظام */
+.system-msg {
+    align-self: center;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.6);
+    color: #ffd700;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin: 6px 0;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.6), 0 0 12px rgba(212, 175, 55, 0.25);
+}
+
+/* مؤشر الكتابة */
+.typing-indicator-box {
+    align-self: flex-start;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: rgba(12, 12, 12, 0.92);
+    border: 1.2px solid #d4af37;
+    padding: 6px 12px;
+    border-radius: 16px;
+    color: #ffd700;
+    font-size: 11px;
+    font-weight: bold;
+    margin-top: 4px;
+    margin-bottom: 6px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.7), 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.typing-dots span {
+    width: 4.5px;
+    height: 4.5px;
+    background-color: #ffd700;
+    border-radius: 50%;
+    display: inline-block;
+    animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.2); }
+}
+
+/* شريط اقتراحات الرسائل السريعة الفخم */
+.quick-suggestions-bar {
+    width: 90%;
+    max-width: 390px;
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+    padding: 4px 2px 6px 2px;
+    flex-shrink: 0;
+    z-index: 10;
+    scrollbar-width: none;
+    margin-bottom: 4px;
+}
+.quick-suggestions-bar::-webkit-scrollbar { display: none; }
+
+.suggestion-chip {
+    background: rgba(15, 15, 15, 0.92);
+    border: 1.2px solid #d4af37;
+    color: #ffd700;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 16px;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.6), 0 0 8px rgba(212, 175, 55, 0.2);
+    transition: 0.2s;
+}
+
+.suggestion-chip:hover {
+    background: #d4af37;
+    color: #000000;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.8);
+}
+
+/* شريط إدخال الرسائل السفلي */
 .chat-input-bar {
-    width: 88%;
-    max-width: 380px;
-    background: rgba(15, 15, 15, 0.9);
+    width: 90%;
+    max-width: 390px;
+    background: rgba(10, 10, 10, 0.96);
     padding: 8px 14px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    border-radius: 30px;
-    border: 1.5px solid #0f8f3c;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.8);
-    margin-bottom: 8px;
+    gap: 10px;
+    border-radius: 28px;
+    border: 2px solid #d4af37;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(212, 175, 55, 0.45);
+    margin-bottom: 12px;
     flex-shrink: 0;
     z-index: 10;
 }
 
 .input-icon {
-    font-size: 20px;
-    color: #2ecc71;
+    font-size: 19px;
+    color: #ffd700;
     cursor: pointer;
     background: none;
     border: none;
+    filter: drop-shadow(0 0 5px rgba(212,175,55,0.4));
 }
 
 .message-input-field {
@@ -261,45 +417,161 @@ body::before {
     background: none;
     border: none;
     color: #ffffff;
-    font-size: 14px;
+    font-size: 14.5px;
     outline: none;
 }
 
 .message-input-field::placeholder {
-    color: #8c9fa8;
+    color: #888;
 }
 
 .send-btn {
     width: 38px;
     height: 38px;
-    background: linear-gradient(135deg, #0f8f3c, #095222);
+    background: linear-gradient(135deg, #ffea9f, #d4af37, #8c6302);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
-    font-size: 16px;
+    color: #000000;
+    font-weight: bold;
+    font-size: 15px;
     cursor: pointer;
     border: none;
-    box-shadow: 0 2px 8px rgba(15,143,60,0.4);
+    box-shadow: 0 3px 12px rgba(212, 175, 55, 0.7);
 }
 
-/* ==========================================
-   واجهة معلومات الجروب (عند النقر)
-   ========================================== */
+/* نافذة تعديل الرسالة الملكية المخصصة */
+#custom-edit-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(5px);
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+}
+
+.edit-modal-box {
+    width: 88%;
+    max-width: 330px;
+    background: rgba(14, 14, 14, 0.96);
+    border: 2px solid #d4af37;
+    border-radius: 24px;
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.95), 0 0 30px rgba(212, 175, 55, 0.5);
+    animation: popUp 0.2s ease-out;
+}
+
+.edit-modal-title {
+    font-size: 16px;
+    font-weight: 900;
+    color: #ffd700;
+    text-align: center;
+}
+
+.edit-modal-input {
+    width: 100%;
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #d4af37;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    outline: none;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.edit-modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.edit-modal-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+}
+
+.edit-modal-btn.cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cccccc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.edit-modal-btn.save {
+    background: linear-gradient(135deg, #ffea9f, #d4af37, #8c6302);
+    color: #000000;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.5);
+}
+
+/* قائمة الخيارات الملكية للرسائل */
+#msg-action-menu {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.telegram-action-bubble {
+    background: #161616;
+    border: 1.5px solid #d4af37;
+    border-radius: 25px;
+    padding: 12px 28px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.9), 0 0 25px rgba(212, 175, 55, 0.5);
+    animation: popUp 0.2s ease-out;
+}
+
+@keyframes popUp {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.action-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    color: #ffd700;
+    transition: transform 0.1s;
+}
+
+.action-icon-btn:active {
+    transform: scale(0.85);
+}
+
+/* واجهة معلومات الجروب */
 #group-profile-modal {
     display: none; 
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #eef1f5; 
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #0b0b0b; 
+    color: #ffffff;
     z-index: 1000;
     overflow-y: auto;
     flex-direction: column;
     align-items: center;
-    padding-bottom: 30px;
+    padding-bottom: 40px;
 }
 
 .profile-top-bar {
@@ -308,107 +580,120 @@ body::before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 15px;
+    padding: 15px 20px;
 }
 
 .profile-back-btn, .profile-menu-btn {
-    font-size: 20px;
-    color: #333333;
+    font-size: 22px;
+    color: #ffd700;
     cursor: pointer;
     background: none;
     border: none;
 }
 
 .profile-big-avatar {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     object-fit: cover;
-    margin-top: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-top: 5px;
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
 }
 
 .profile-info-section {
     text-align: center;
-    margin-top: 12px;
+    margin-top: 14px;
 }
 
 .profile-info-section h2 {
-    font-size: 19px;
-    font-weight: 800;
-    color: #000000;
+    font-size: 20px;
+    font-weight: 900;
+    color: #ffd700;
 }
 
 .profile-info-section span {
     font-size: 13px;
-    color: #707579;
+    color: #aaa;
+    margin-top: 4px;
+    display: block;
 }
 
 .profile-actions-row {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     margin-top: 20px;
-    width: 94%;
+    width: 92%;
     max-width: 440px;
 }
 
 .action-card {
     flex: 1;
-    background: #ffffff; 
+    background: rgba(20, 20, 20, 0.9); 
+    border: 1px solid rgba(212, 175, 55, 0.4);
     border-radius: 16px;
-    padding: 12px 4px;
+    padding: 12px 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 6px;
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
-.action-card span:first-child { font-size: 20px; }
-.action-card span:last-child { font-size: 10px; font-weight: 700; color: #000000; text-align: center; }
+.action-card span:first-child { font-size: 22px; }
+.action-card span:last-child { font-size: 11px; font-weight: 700; color: #ffd700; text-align: center; }
 
 .invite-link-section {
-    width: 94%;
+    width: 92%;
     max-width: 440px;
-    background: #ffffff; 
-    border-radius: 14px;
-    padding: 12px 15px;
-    margin-top: 12px;
+    background: rgba(20, 20, 20, 0.9); 
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-top: 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
-.invite-link-info span:first-child { font-size: 13px; color: #000000; font-weight: 600; }
-.invite-link-info span:last-child { font-size: 11px; color: #707579; }
+.invite-link-info span:first-child { font-size: 14px; color: #ffd700; font-weight: 700; }
+.invite-link-info span:last-child { font-size: 11px; color: #aaa; display: block; margin-top: 2px;}
 
-/* قائمة الأعضاء مع حالة الاتصال بشكل احترافي */
 .members-list-container {
-    width: 94%;
+    width: 92%;
     max-width: 440px;
-    margin-top: 15px;
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+}
+
+.members-title {
+    font-size: 14px;
+    color: #ffd700;
+    font-weight: bold;
+    margin-bottom: 4px;
+    margin-right: 4px;
 }
 
 .member-item {
     display: flex;
     align-items: center;
-    padding: 12px 15px;
-    gap: 12px;
-    background: #ffffff; 
-    border-radius: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    padding: 12px 16px;
+    gap: 14px;
+    background: rgba(18, 18, 18, 0.9); 
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
 .member-avatar-wrapper {
     position: relative;
-    width: 42px;
-    height: 42px;
+    width: 45px;
+    height: 45px;
     flex-shrink: 0;
 }
 
@@ -417,19 +702,19 @@ body::before {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
+    border: 1.5px solid #ffd700;
 }
 
-/* علامة الاتصال الخضراء المصغرة بدقة فوق الصورة */
 .online-indicator {
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
     background-color: #2ecc71;
-    border: 2px solid #ffffff;
+    border: 2px solid #000;
     border-radius: 50%;
-    box-shadow: 0 0 4px rgba(46, 204, 113, 0.8);
+    box-shadow: 0 0 6px rgba(46, 204, 113, 0.9);
 }
 
 .member-details {
@@ -440,9 +725,9 @@ body::before {
 }
 
 .member-name {
-    font-size: 14px;
-    font-weight: 700;
-    color: #000000;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -450,23 +735,25 @@ body::before {
 
 .member-status {
     font-size: 12px;
-    color: #707579;
+    color: #aaa;
+    margin-top: 2px;
 }
 
 .member-status.online {
     color: #2ecc71;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .owner-badge {
-    background: #f3f0fc;
-    color: #7c3aed;
-    border: 1px solid #d8b4fe;
+    background: rgba(212, 175, 55, 0.2);
+    color: #ffd700;
+    border: 1px solid #ffd700;
     font-size: 10px;
-    padding: 1px 6px;
+    padding: 2px 8px;
     border-radius: 6px;
     font-weight: bold;
     width: fit-content;
+    margin-top: 3px;
 }
 </style>
 </head>
@@ -479,76 +766,91 @@ body::before {
             <img class="th-avatar" src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=900" alt="صورة الجروب">
         </div>
         <div class="th-info" onclick="openProfile()">
-            <h3>جـروب تـعارف ودردشـة</h3>
+            <h3>جـروب تـعارف ودردشـة الملكي</h3>
         </div>
-        <div class="th-left">🔍</div>
+        <div class="th-left" onclick="openProfile()">🔍</div>
     </div>
 
     <div class="external-active-badge">
-        <span class="pulse-dot"></span> <span>119 متصلاً الآن</span>
+        <span class="pulse-dot"></span> <span id="onlineCountText">1 متصلاً الآن</span>
     </div>
 </div>
 
-<!-- خط فاصل بين عنوان الجروب ومنطقة الرسائل -->
 <div class="chat-divider"></div>
 
 <!-- منطقة الرسائل -->
-<div class="chat-messages-container">
-    <div class="message-row incoming">
+<div class="chat-messages-container" id="messagesContainer">
+    <div class="system-msg">⭐ أهلاً بكم في جروب تعارف ودردشة الملكي الفاخر ⭐</div>
+
+    <div class="message-row incoming" oncontextmenu="showMenu(event, false)">
         <img class="msg-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" alt="صورة العضو">
         <div class="message-bubble">
             <span class="msg-sender">ياسمين إبراهيم</span>
-            <span class="msg-text">منورين جميعاً، يسعد أوقاتكم ✨</span>
+            <span class="msg-text">منورين الجروب يا جماعة ✨</span>
             <span class="msg-time">٩:٢٧ ص</span>
         </div>
     </div>
 
-    <div class="message-row outgoing">
-        <img class="msg-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900" alt="صورتك">
+    <div class="message-row outgoing" oncontextmenu="showMenu(event, true)">
+        <img class="msg-avatar" id="myChatAvatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900" alt="صورتك">
         <div class="message-bubble">
-            <span class="msg-sender" style="color: #0f8f3c;">أحمد محمد (أنت)</span>
-            <span class="msg-text">أهلاً بالجميع، منورين الجروب الملكي ✨</span>
-            <span class="msg-time">٩:٣٠ ص</span>
+            <span class="msg-sender" id="myChatUsername">أحمد محمد (أنت)</span>
+            <span class="msg-text">أهلاً بالجميع، الجروب فخم جداً وراقي ✨</span>
+            <div class="msg-footer">
+                <span class="msg-ticks seen" onclick="toggleSeen(this)" title="حالة القراءة">✓✓</span>
+                <span class="msg-time">٩:٣٠ ص</span>
+            </div>
         </div>
     </div>
 
-    <div class="message-row incoming">
-        <img class="msg-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=900" alt="صورة العضو">
-        <div class="message-bubble">
-            <span class="msg-sender">محمد حسن</span>
-            <span class="msg-text">مساء الورد، هل من ناس رايقة لدردشة محترمة؟</span>
-            <span class="msg-time">٩:٣٢ ص</span>
+    <div class="typing-indicator-box" id="typingIndicator">
+        <span>ياسمين تكتب الآن</span>
+        <div class="typing-dots">
+            <span></span><span></span><span></span>
         </div>
     </div>
+</div>
 
-    <div class="message-row incoming">
-        <img class="msg-avatar" src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=900" alt="صورة العضو">
-        <div class="message-bubble">
-            <span class="msg-sender">طارق سمير</span>
-            <span class="msg-text">موجودين يا غالي، تفضل أطرح موضوعك</span>
-            <span class="msg-time">٩:٣٩ ص</span>
+<!-- شريط اقتراحات الرسائل السريعة الفخم -->
+<div class="quick-suggestions-bar">
+    <div class="suggestion-chip" onclick="sendSuggestion('مساكم الله بالخير 🌹')">🌹 مساكم الله بالخير</div>
+    <div class="suggestion-chip" onclick="sendSuggestion('منورين جميعاً ✨')">✨ منورين جميعاً</div>
+    <div class="suggestion-chip" onclick="sendSuggestion('كيف حالكم يا أصدقاء؟ 👋')">👋 كيف حالكم؟</div>
+    <div class="suggestion-chip" onclick="sendSuggestion('سهرة ممتعة للجميع ☕')">☕ سهرة ممتعة</div>
+    <div class="suggestion-chip" onclick="sendSuggestion('وعليكم السلام ورحمة الله 🤍')">🤍 وعليكم السلام</div>
+    <div class="suggestion-chip" onclick="sendSuggestion('تبارك الرحمن إبداع 🔥')">🔥 إبداع</div>
+    <div class="suggestion-chip" onclick="sendSuggestion('يسعد مساكم بكل خير ⭐')">⭐ يسعد مساكم</div>
+</div>
+
+<!-- نافذة تعديل الرسالة الملكية المخصصة -->
+<div id="custom-edit-modal">
+    <div class="edit-modal-box">
+        <div class="edit-modal-title">✏️ تعديل الرسالة الملكية</div>
+        <input type="text" id="editModalInput" class="edit-modal-input" autocomplete="off">
+        <div class="edit-modal-buttons">
+            <button class="edit-modal-btn cancel" onclick="closeEditModal()">إلغاء</button>
+            <button class="edit-modal-btn save" onclick="saveEditedMessage()">حفظ التعديل</button>
         </div>
     </div>
+</div>
 
-    <div class="message-row incoming">
-        <img class="msg-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900" alt="صورة العضو">
-        <div class="message-bubble">
-            <span class="msg-sender">داليا محمود</span>
-            <span class="msg-text">أحلى جروب وأجمل ناس تعارف ودردشة</span>
-            <span class="msg-time">٩:٤٨ ص</span>
-        </div>
+<!-- قائمة تيليجرام العائمة للخيارات -->
+<div id="msg-action-menu" onclick="hideMenu(event)">
+    <div class="telegram-action-bubble">
+        <button class="action-icon-btn" id="editBtn" title="تعديل" onclick="openEditModal()">✏️</button>
+        <button class="action-icon-btn" id="deleteBtn" title="حذف" onclick="deleteMessage()">🗑️</button>
     </div>
 </div>
 
 <!-- شريط إدخال الرسائل السفلي -->
 <div class="chat-input-bar">
     <button class="input-icon">😊</button>
-    <input type="text" class="message-input-field" placeholder="اكتب رسالة...">
+    <input type="text" id="messageInput" class="message-input-field" placeholder="اكتب رسالة..." autocomplete="off">
     <button class="input-icon">📎</button>
-    <button class="send-btn">➤</button>
+    <button class="send-btn" onclick="sendMessage()">➤</button>
 </div>
 
-<!-- واجهة معلومات الجروب (تفتح عند النقر) -->
+<!-- واجهة معلومات الجروب -->
 <div id="group-profile-modal">
     <div class="profile-top-bar">
         <button class="profile-back-btn" onclick="closeProfile()">←</button>
@@ -558,8 +860,8 @@ body::before {
     <img class="profile-big-avatar" src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=900" alt="صورة الجروب">
 
     <div class="profile-info-section">
-        <h2>جروب تعارف ودردشة</h2>
-        <span>١٣٢٧ عضواً، ١١٩ متصلاً</span>
+        <h2>جروب تعارف ودردشة الملكي</h2>
+        <span id="membersCountText">١ عضواً، ١ متصلاً</span>
     </div>
 
     <div class="profile-actions-row">
@@ -573,88 +875,228 @@ body::before {
         </div>
         <div class="action-card">
             <span>📹</span>
-            <span>محادثة مرئية</span>
+            <span>مرئية</span>
         </div>
-        <div class="action-card">
-            <span>🚪</span>
-            <span>مغادرة</span>
+        <div class="action-card" onclick="alert('أنت مالك الجروب الملكي!')">
+            <span>👑</span>
+            <span>المالك</span>
         </div>
     </div>
 
     <div class="invite-link-section">
         <div class="invite-link-info">
-            <span>t.me/ChatGroup2026</span>
-            <span style="display: block; margin-top: 2px;">رابط الدعوة</span>
+            <span>t.me/RoyalChat2026</span>
+            <span>رابط الدعوة الملكي</span>
         </div>
-        <span style="font-size: 18px; color: #707579;">🔗</span>
+        <span style="font-size: 18px; color: #ffd700;">🔗</span>
     </div>
 
-    <!-- قائمة الأعضاء الحقيقيين مع علامات الاتصال والنشاط -->
     <div class="members-list-container">
-        <div class="member-item">
-            <div class="member-avatar-wrapper">
-                <img class="member-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900" alt="عضو">
-                <div class="online-indicator"></div>
-            </div>
-            <div class="member-details">
-                <span class="member-name">أحمد محمد (أنت)</span>
-                <span class="member-status online">متصل الآن</span>
-                <div class="owner-badge" style="margin-top: 2px;">المالك</div>
-            </div>
-        </div>
-
-        <div class="member-item">
-            <div class="member-avatar-wrapper">
-                <img class="member-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" alt="عضو">
-                <div class="online-indicator"></div>
-            </div>
-            <div class="member-details">
-                <span class="member-name">ياسمين إبراهيم</span>
-                <span class="member-status online">متصل الآن</span>
-            </div>
-        </div>
-
-        <div class="member-item">
-            <div class="member-avatar-wrapper">
-                <img class="member-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=900" alt="عضو">
-                <div class="online-indicator"></div>
-            </div>
-            <div class="member-details">
-                <span class="member-name">محمد حسن</span>
-                <span class="member-status online">متصل الآن</span>
-            </div>
-        </div>
-
-        <div class="member-item">
-            <div class="member-avatar-wrapper">
-                <img class="member-avatar" src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=900" alt="عضو">
-            </div>
-            <div class="member-details">
-                <span class="member-name">طارق سمير</span>
-                <span class="member-status">آخر ظهور منذ ٥ دقائق</span>
-            </div>
-        </div>
-
-        <div class="member-item">
-            <div class="member-avatar-wrapper">
-                <img class="member-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900" alt="عضو">
-                <div class="online-indicator"></div>
-            </div>
-            <div class="member-details">
-                <span class="member-name">داليا محمود</span>
-                <span class="member-status online">متصل الآن</span>
-            </div>
-        </div>
+        <div class="members-title">قائمة الأعضاء المتواجدين</div>
+        <div id="dynamicMembersList"></div>
     </div>
 </div>
 
+<!-- ربط مكتبة Socket.IO للاتصال الحقيقي مع بايثون -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 <script>
-function openProfile() {
-    document.getElementById('group-profile-modal').style.display = 'flex';
-}
-function closeProfile() {
-    document.getElementById('group-profile-modal').style.display = 'none';
-}
+    const socket = io();
+    let currentSelectedMessage = null;
+    let currentUser = {
+        username: "أحمد محمد",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900"
+    };
+
+    function playTelegramSound() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(850, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(450, audioCtx.currentTime + 0.08);
+            gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        } catch(e) {}
+    }
+
+    window.onload = function() {
+        const activeUserStr = localStorage.getItem('current_active_user');
+        if(activeUserStr) {
+            try {
+                const userObj = JSON.parse(activeUserStr);
+                if(userObj.username) currentUser.username = userObj.username;
+                if(userObj.avatar) currentUser.avatar = userObj.avatar;
+            } catch(e) {}
+        }
+
+        document.getElementById('myChatUsername').textContent = currentUser.username + " (أنت)";
+        document.getElementById('myChatAvatar').src = currentUser.avatar;
+
+        // الاتصال الحقيقي بالسيرفر وإرسال بيانات الانضمام
+        socket.emit('join_chat', {
+            username: currentUser.username,
+            avatar: currentUser.avatar
+        });
+    };
+
+    // استقبال تحديث المتصلين الحقيقيين من بايثون
+    socket.on('update_real_users', function(data) {
+        const container = document.getElementById('dynamicMembersList');
+        let html = '';
+
+        data.users.forEach(u => {
+            const isMe = u.username === currentUser.username;
+            html += `
+            <div class="member-item">
+                <div class="member-avatar-wrapper">
+                    <img class="member-avatar" src="${u.avatar}" alt="عضو">
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="member-details">
+                    <span class="member-name">${u.username} ${isMe ? '(أنت)' : ''}</span>
+                    <span class="member-status online">متصل الآن</span>
+                    ${isMe ? '<div class="owner-badge">المالك الملكي</div>' : ''}
+                </div>
+            </div>`;
+        });
+
+        container.innerHTML = html;
+        document.getElementById('membersCountText').textContent = `${data.count} عضواً، ${data.count} متصلاً`;
+        document.getElementById('onlineCountText').textContent = `${data.count} متصلاً الآن`;
+    });
+
+    // استقبال إشعارات النظام الحقيقية
+    socket.on('system_notification', function(data) {
+        const container = document.getElementById('messagesContainer');
+        const sysMsg = document.createElement('div');
+        sysMsg.className = 'system-msg';
+        sysMsg.textContent = data.message;
+        container.insertBefore(sysMsg, container.firstChild.nextSibling);
+    });
+
+    // استقبال الرسائل الحقيقية من السيرفر
+    socket.on('receive_message', function(data) {
+        playTelegramSound();
+        const container = document.getElementById('messagesContainer');
+        const typingBox = document.getElementById('typingIndicator');
+        const isOutgoing = data.username === currentUser.username;
+
+        const row = document.createElement('div');
+        row.className = `message-row ${isOutgoing ? 'outgoing' : 'incoming'}`;
+        
+        if(isOutgoing) {
+            row.oncontextmenu = (e) => showMenu(e, true);
+            row.onclick = (e) => showMenu(e, true);
+        }
+
+        row.innerHTML = `
+            <img class="msg-avatar" src="${data.avatar}" alt="صورة">
+            <div class="message-bubble">
+                <span class="msg-sender">${data.username} ${isOutgoing ? '(أنت)' : ''}</span>
+                <span class="msg-text">${data.message}</span>
+                <div class="msg-footer">
+                    ${isOutgoing ? '<span class="msg-ticks" onclick="toggleSeen(this)" title="حالة القراءة">✓✓</span>' : ''}
+                    <span class="msg-time">${data.time}</span>
+                </div>
+            </div>
+        `;
+
+        container.insertBefore(row, typingBox);
+        container.scrollTop = container.scrollHeight;
+
+        // محاكاة وصول الرسالة ثم قراءتها مثل واتساب تلقائياً
+        if(isOutgoing) {
+            const ticksEl = row.querySelector('.msg-ticks');
+            setTimeout(() => { ticksEl.style.color = '#707579'; }, 1000);
+            setTimeout(() => { 
+                ticksEl.classList.add('seen');
+                ticksEl.style.color = '#00e676';
+            }, 3000);
+        }
+    });
+
+    function openProfile() {
+        document.getElementById('group-profile-modal').style.display = 'flex';
+    }
+    function closeProfile() {
+        document.getElementById('group-profile-modal').style.display = 'none';
+    }
+
+    function showMenu(e, isOutgoing) {
+        e.preventDefault();
+        currentSelectedMessage = e.currentTarget;
+        if(isOutgoing) {
+            document.getElementById('msg-action-menu').style.display = 'flex';
+        }
+    }
+
+    function hideMenu(e) {
+        if(e.target.id === 'msg-action-menu') {
+            document.getElementById('msg-action-menu').style.display = 'none';
+        }
+    }
+
+    function openEditModal() {
+        if(!currentSelectedMessage) return;
+        document.getElementById('msg-action-menu').style.display = 'none';
+        const textSpan = currentSelectedMessage.querySelector('.msg-text');
+        document.getElementById('editModalInput').value = textSpan.textContent;
+        document.getElementById('custom-edit-modal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+        document.getElementById('custom-edit-modal').style.display = 'none';
+    }
+
+    function saveEditedMessage() {
+        if(!currentSelectedMessage) return;
+        const newText = document.getElementById('editModalInput').value.trim();
+        if(newText !== "") {
+            currentSelectedMessage.querySelector('.msg-text').textContent = newText;
+        }
+        closeEditModal();
+    }
+
+    function deleteMessage() {
+        if(!currentSelectedMessage) return;
+        currentSelectedMessage.remove();
+        document.getElementById('msg-action-menu').style.display = 'none';
+    }
+
+    function toggleSeen(el) {
+        if(el.classList.contains('seen')) {
+            el.classList.remove('seen');
+            el.style.color = '#707579';
+        } else {
+            el.classList.add('seen');
+            el.style.color = '#00e676';
+        }
+    }
+
+    function sendSuggestion(text) {
+        document.getElementById('messageInput').value = text;
+        sendMessage();
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const text = input.value.trim();
+        if(!text) return;
+
+        // إرسال الرسالة عبر السوكيت الحقيقي لمعالجة بايثون وبثها للجميع
+        socket.emit('send_message', {
+            username: currentUser.username,
+            avatar: currentUser.avatar,
+            message: text
+        });
+
+        input.value = '';
+    }
 </script>
 
 </body>
