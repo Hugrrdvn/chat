@@ -1,27 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template
 
 app = Flask(__name__)
-app.secret_key = 'mohammed_awad_super_secret_key_2026'
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def register():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        if username:
-            session['username'] = username
-            return redirect(url_for('chat'))
     return render_template('register.html')
 
 @app.route('/chat')
 def chat():
-    if 'username' not in session:
-        return redirect(url_for('register'))
-    return render_template('chat.html', username=session['username'])
-
-@app.route('/logout')
-def logout():
-    session.pop('username', None)
-    return redirect(url_for('register'))
+    return render_template('chat.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
