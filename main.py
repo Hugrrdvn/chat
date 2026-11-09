@@ -6,23 +6,21 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'royal_secret_key_2026'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# قاعدة بيانات مؤقتة لتخزين المتصلين الحقيقيين وسجل الرسائل لضمان ظهورها للجميع
 active_users = {}
 messages_history = []
 
 @app.route('/')
-def register():
-    return render_template('register.html')
+def index():
+    return render_template('chat.html')
 
 @app.route('/chat')
 def chat():
     return render_template('chat.html')
 
-# حدث عند انضمام مستخدم حقيقي للسيرفر
 @socketio.on('join_chat')
 def handle_join(data):
-    username = data.get('username')
-    avatar = data.get('avatar')
+    username = data.get('username') or "عضو ملكي"
+    avatar = data.get('avatar') or "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900"
     
     active_users[request.sid] = {
         'username': username,
@@ -30,19 +28,18 @@ def handle_join(data):
         'status': 'متصل الآن'
     }
     
-    # تحديث قائمة المتصلين للجميع
     broadcast_active_users()
-    
-    # إرسال السجل الكامل للرسائل للمستخدم لضمان ظهورها فور دخوله
     emit('load_history', messages_history)
     emit('system_notification', {'message': f'✨ انضم "{username}" إلى الجروب الملكي'}, broadcast=True)
 
-# حدث عند إرسال رسالة جديدة وعرضها فوراً في الدردشة وتفعيل التنبيه والصحين
 @socketio.on('send_message')
 def handle_message(data):
-    username = data.get('username')
-    avatar = data.get('avatar')
+    username = data.get('username') or "عضو ملكي"
+    avatar = data.get('avatar') or "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900"
     message = data.get('message')
+    if not message:
+        return
+        
     timestamp = datetime.now().strftime('%I:%M %p')
     
     msg_data = {
@@ -54,13 +51,12 @@ def handle_message(data):
         'status': 'sent'
     }
     
-    # حفظ الرسالة في السجل لكي تظهر لكل من ينضم لاحقاً
     messages_history.append(msg_data)
-    
-    # بث الرسالة لجميع الشاشات والمتصلين في الوقت الفعلي لتظهر في الدردشة بدقة
+    if len(messages_history) > 100:
+        messages_history.pop(0)
+        
     emit('receive_message', msg_data, broadcast=True)
 
-# حدث عند خروج المستخدم من الشات
 @socketio.on('disconnect')
 def handle_disconnect():
     if request.sid in active_users:
