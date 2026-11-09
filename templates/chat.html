@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>جروب تعارف ودردشة الملكي | الدردشة الرسمية</title>
+<!-- إضافة مكتبة Socket.IO للاتصال الفعلي بالسيرفر -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
 
@@ -285,13 +287,13 @@ body::after {
 .msg-ticks {
     font-size: 11px;
     font-weight: 900;
-    color: #707579; /* لون رمادي داكن للصحين غير المقروءة */
+    color: #707579;
     cursor: pointer;
     transition: color 0.3s ease;
 }
 
 .msg-ticks.seen {
-    color: #00e676 !important; /* لون أخضر واتساب زاهي عند القراءة */
+    color: #00e676 !important;
     text-shadow: 0 0 6px rgba(0, 230, 118, 0.6);
 }
 
@@ -772,7 +774,7 @@ body::after {
     </div>
 
     <div class="external-active-badge">
-        <span class="pulse-dot"></span> <span id="onlineCountText">120 متصلاً الآن</span>
+        <span class="pulse-dot"></span> <span id="onlineCountText">1 متصلاً الآن</span>
     </div>
 </div>
 
@@ -782,30 +784,8 @@ body::after {
 <div class="chat-messages-container" id="messagesContainer">
     <div class="system-msg">⭐ أهلاً بكم في جروب تعارف ودردشة الملكي الفاخر ⭐</div>
 
-    <div class="message-row incoming" oncontextmenu="showMenu(event, false)">
-        <img class="msg-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" alt="صورة العضو">
-        <div class="message-bubble">
-            <span class="msg-sender">ياسمين إبراهيم</span>
-            <span class="msg-text">منورين الجروب يا جماعة ✨</span>
-            <span class="msg-time">٩:٢٧ ص</span>
-        </div>
-    </div>
-
-    <div class="message-row outgoing" oncontextmenu="showMenu(event, true)">
-        <img class="msg-avatar" id="myChatAvatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900" alt="صورتك">
-        <div class="message-bubble">
-            <span class="msg-sender" id="myChatUsername">أحمد محمد (أنت)</span>
-            <span class="msg-text">أهلاً بالجميع، الجروب فخم جداً وراقي ✨</span>
-            <div class="msg-footer">
-                <!-- تبدأ كصحين رماديين/داكنين، وتتحول تلقائياً للأخضر عند النقر أو محاكاة القراءة -->
-                <span class="msg-ticks" onclick="toggleSeen(this)" title="حالة القراءة">✓✓</span>
-                <span class="msg-time">٩:٣٠ ص</span>
-            </div>
-        </div>
-    </div>
-
     <div class="typing-indicator-box" id="typingIndicator">
-        <span>ياسمين تكتب الآن</span>
+        <span>جاري الكتابة...</span>
         <div class="typing-dots">
             <span></span><span></span><span></span>
         </div>
@@ -862,7 +842,7 @@ body::after {
 
     <div class="profile-info-section">
         <h2>جروب تعارف ودردشة الملكي</h2>
-        <span id="membersCountText">١٣٢٨ عضواً، ١٢٠ متصلاً</span>
+        <span id="membersCountText">١ عضواً، ١ متصلاً</span>
     </div>
 
     <div class="profile-actions-row">
@@ -899,6 +879,8 @@ body::after {
 </div>
 
 <script>
+    const socket = io(); // الاتصال بسيرفر البايثون الحي
+
     let currentSelectedMessage = null;
     let currentUser = {
         username: "أحمد محمد",
@@ -932,26 +914,43 @@ body::after {
             } catch(e) {}
         }
 
-        document.getElementById('myChatUsername').textContent = currentUser.username + " (أنت)";
-        document.getElementById('myChatAvatar').src = currentUser.avatar;
-
-        let users = JSON.parse(localStorage.getItem('classic_users')) || [];
-        if(!users.some(u => u.username === currentUser.username)) {
-            users.push(currentUser);
-            localStorage.setItem('classic_users', JSON.stringify(users));
-        }
-
-        renderMembersList(users);
-        showJoinSystemMessage(currentUser.username);
-
-        setInterval(() => {
-            const typingBox = document.getElementById('typingIndicator');
-            typingBox.style.display = 'flex';
-            setTimeout(() => {
-                typingBox.style.display = 'none';
-            }, 3500);
-        }, 14000);
+        // إبلاغ السيرفر بانضمام المستخدم الحقيقي
+        socket.emit('join_chat', {
+            username: currentUser.username,
+            avatar: currentUser.avatar
+        });
     };
+
+    // استقبال سجل الرسائل القديمة عند الدخول
+    socket.on('load_history', function(history) {
+        const container = document.getElementById('messagesContainer');
+        // إزالة الرسائل القديمة المتكررة إن وجدت قبل الإضافة
+        history.forEach(msg => {
+            appendMessageToDOM(msg, false);
+        });
+    });
+
+    // استقبال رسالة جديدة في الوقت الفعلي من السيرفر
+    socket.on('receive_message', function(msg) {
+        appendMessageToDOM(msg, true);
+        playTelegramSound();
+    });
+
+    // استقبال تحديث المتصلين الحقيقيين عبر السيرفر
+    socket.on('update_real_users', function(data) {
+        renderMembersList(data.users, data.count);
+    });
+
+    // إشعارات النظام (انضمام أو مغادرة عضو)
+    socket.on('system_notification', function(data) {
+        const container = document.getElementById('messagesContainer');
+        const typingBox = document.getElementById('typingIndicator');
+        const sysMsg = document.createElement('div');
+        sysMsg.className = 'system-msg';
+        sysMsg.textContent = data.message;
+        container.insertBefore(sysMsg, typingBox);
+        container.scrollTop = container.scrollHeight;
+    });
 
     function openProfile() {
         document.getElementById('group-profile-modal').style.display = 'flex';
@@ -960,57 +959,34 @@ body::after {
         document.getElementById('group-profile-modal').style.display = 'none';
     }
 
-    function renderMembersList(users) {
+    function renderMembersList(users, count) {
         const container = document.getElementById('dynamicMembersList');
         let html = '';
 
-        html += `
-        <div class="member-item">
-            <div class="member-avatar-wrapper">
-                <img class="member-avatar" src="${currentUser.avatar}" alt="عضو">
-                <div class="online-indicator"></div>
-            </div>
-            <div class="member-details">
-                <span class="member-name">${currentUser.username} (أنت)</span>
-                <span class="member-status online">متصل الآن</span>
-                <div class="owner-badge">المالك الملكي</div>
-            </div>
-        </div>`;
-
         users.forEach(u => {
-            if(u.username !== currentUser.username) {
-                html += `
-                <div class="member-item">
-                    <div class="member-avatar-wrapper">
-                        <img class="member-avatar" src="${u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900'}" alt="عضو">
-                        <div class="online-indicator"></div>
-                    </div>
-                    <div class="member-details">
-                        <span class="member-name">${u.username}</span>
-                        <span class="member-status online">متصل الآن</span>
-                    </div>
-                </div>`;
-            }
+            let isMe = (u.username === currentUser.username);
+            html += `
+            <div class="member-item">
+                <div class="member-avatar-wrapper">
+                    <img class="member-avatar" src="${u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900'}" alt="عضو">
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="member-details">
+                    <span class="member-name">${u.username} ${isMe ? '(أنت)' : ''}</span>
+                    <span class="member-status online">${u.status}</span>
+                    ${isMe ? '<div class="owner-badge">المالك الملكي</div>' : ''}
+                </div>
+            </div>`;
         });
 
         container.innerHTML = html;
-        const totalCount = 1327 + users.length;
-        document.getElementById('membersCountText').textContent = `${totalCount} عضواً، ١٢٠ متصلاً`;
-        document.getElementById('onlineCountText').textContent = `${119 + users.length} متصلاً الآن`;
-    }
-
-    function showJoinSystemMessage(name) {
-        const container = document.getElementById('messagesContainer');
-        const sysMsg = document.createElement('div');
-        sysMsg.className = 'system-msg';
-        sysMsg.textContent = `✨ انضم "${name}" إلى الجروب الملكي`;
-        container.insertBefore(sysMsg, container.firstChild.nextSibling);
+        document.getElementById('membersCountText').textContent = `${count} عضواً متصلاً`;
+        document.getElementById('onlineCountText').textContent = `${count} متصلاً الآن`;
     }
 
     function showMenu(e, isOutgoing) {
         e.preventDefault();
         currentSelectedMessage = e.currentTarget;
-        
         const editBtn = document.getElementById('editBtn');
         const deleteBtn = document.getElementById('deleteBtn');
 
@@ -1054,7 +1030,6 @@ body::after {
         document.getElementById('msg-action-menu').style.display = 'none';
     }
 
-    // دالة محاكاة واتساب الحقيقية للصحين (تبدأ رمادي/داكن وتتحول تلقائياً للأخضر الزاهي عند القراءة)
     function toggleSeen(el) {
         if(el.classList.contains('seen')) {
             el.classList.remove('seen');
@@ -1075,41 +1050,40 @@ body::after {
         const text = input.value.trim();
         if(!text) return;
 
-        playTelegramSound();
+        // إرسال الرسالة إلى سيرفر البايثون الحي عبر السوكيت لتصل للجميع
+        socket.emit('send_message', {
+            username: currentUser.username,
+            avatar: currentUser.avatar,
+            message: text
+        });
 
+        input.value = '';
+    }
+
+    function appendMessageToDOM(msg, playSound) {
         const container = document.getElementById('messagesContainer');
         const typingBox = document.getElementById('typingIndicator');
+        
+        let isOutgoing = (msg.username.includes(currentUser.username) || msg.sender_sid === socket.id);
+
         const row = document.createElement('div');
-        row.className = 'message-row outgoing';
-        row.oncontextmenu = (e) => showMenu(e, true);
-        row.onclick = (e) => showMenu(e, true);
+        row.className = isOutgoing ? 'message-row outgoing' : 'message-row incoming';
+        row.oncontextmenu = (e) => showMenu(e, isOutgoing);
 
         row.innerHTML = `
-            <img class="msg-avatar" src="${currentUser.avatar}" alt="صورتك">
+            <img class="msg-avatar" src="${msg.avatar}" alt="صورة">
             <div class="message-bubble">
-                <span class="msg-sender">${currentUser.username} (أنت)</span>
-                <span class="msg-text">${text}</span>
+                <span class="msg-sender">${msg.username}</span>
+                <span class="msg-text">${msg.message}</span>
                 <div class="msg-footer">
-                    <span class="msg-ticks" onclick="toggleSeen(this)" title="حالة القراءة">✓✓</span>
-                    <span class="msg-time">الآن</span>
+                    <span class="msg-ticks seen" onclick="toggleSeen(this)" title="حالة القراءة">✓✓</span>
+                    <span class="msg-time">${msg.time}</span>
                 </div>
             </div>
         `;
 
         container.insertBefore(row, typingBox);
-        input.value = '';
         container.scrollTop = container.scrollHeight;
-
-        // محاكاة تلقائية مثل واتساب: بعد ثانيتين من الإرسال تتحول الصحين إلى اللون الرمادي الداكن كأنها وصلت، وبعد 4 ثواني تصبح خضراء مقروءة أوتوماتيكياً!
-        const ticksEl = row.querySelector('.msg-ticks');
-        setTimeout(() => {
-            ticksEl.style.color = '#707579'; // وصلت (صحين رمادي)
-        }, 1500);
-
-        setTimeout(() => {
-            ticksEl.classList.add('seen');
-            ticksEl.style.color = '#00e676'; // تمت القراءة (صحين أخضر واتساب)
-        }, 3500);
     }
 </script>
 
