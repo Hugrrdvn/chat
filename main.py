@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'royal_secret_key_2026'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# قاعدة بيانات مؤقتة لتخزين المتصلين الحقيقيين والرسائل المرسلة
+# قاعدة بيانات مؤقتة لتخزين المتصلين الحقيقيين وسجل الرسائل لضمان ظهورها للجميع
 active_users = {}
 messages_history = []
 
@@ -33,11 +33,11 @@ def handle_join(data):
     # تحديث قائمة المتصلين للجميع
     broadcast_active_users()
     
-    # إرسال السجل القديم للرسائل للمستخدم الجديد لضمان الاستمرارية
+    # إرسال السجل الكامل للرسائل للمستخدم لضمان ظهورها فور دخوله
     emit('load_history', messages_history)
     emit('system_notification', {'message': f'✨ انضم "{username}" إلى الجروب الملكي'}, broadcast=True)
 
-# حدث عند إرسال رسالة (تبدأ الصحين بلون رمادي/أسود غامض كلاسيكي وبهدوء تام)
+# حدث عند إرسال رسالة جديدة وعرضها فوراً في الدردشة وتفعيل التنبيه والصحين
 @socketio.on('send_message')
 def handle_message(data):
     username = data.get('username')
@@ -51,17 +51,14 @@ def handle_message(data):
         'message': message,
         'time': timestamp,
         'sender_sid': request.sid,
-        'status': 'sent' # تبدأ كمرسلة (صحين رمادي غامض)
+        'status': 'sent'
     }
     
+    # حفظ الرسالة في السجل لكي تظهر لكل من ينضم لاحقاً
     messages_history.append(msg_data)
     
-    # بث الرسالة بهدوء لكل المتصلين في الجروب
+    # بث الرسالة لجميع الشاشات والمتصلين في الوقت الفعلي لتظهر في الدردشة بدقة
     emit('receive_message', msg_data, broadcast=True)
-    
-    # محاكاة الاستلام والقراءة التلقائية عبر بايثون لتحويل الصحين إلى أخضر حقيقي بعد الاستلام
-    socketio.sleep(2)
-    emit('mark_message_delivered', {'sender_sid': request.sid}, broadcast=True)
 
 # حدث عند خروج المستخدم من الشات
 @socketio.on('disconnect')
