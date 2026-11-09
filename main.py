@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = 'mohammed_awad_royal_chat_secret_key'
+app.secret_key = 'mohammed_awad_super_secret_key_2026'
 
 @app.route('/', methods=['GET', 'POST'])
 def register():
