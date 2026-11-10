@@ -1,19 +1,21 @@
 import os
 import sqlite3
 from datetime import datetime
+from threading import Lock
 
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 
-# =====================================
-# ROYAL CHAT SERVER
-# =====================================
+# ==========================================
+# ROYAL CHAT - REAL-TIME CHAT SERVER
+# ==========================================
 
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = os.environ.get(
-    "SECRET_KEY", "royal-chat-secret-key"
+    "SECRET_KEY",
+    "royal-chat-production-secret"
 )
 
 CORS(app)
@@ -24,19 +26,29 @@ socketio = SocketIO(
     async_mode="threading"
 )
 
-DATABASE = "royal_chat.db"
+DATABASE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "royal_chat.db"
+)
 
-# =====================================
+users_lock = Lock()
+online_users = {}
+
+# ==========================================
 # DATABASE
-# =====================================
+# ==========================================
 
 def get_db():
-    connection = sqlite3.connect(DATABASE)
-    connection.row_factory = sqlite3.Row
-    return connection
+    db = sqlite3.connect(
+        DATABASE,
+        timeout=30
+    )
+    db.row_factory = sqlite3.Row
+    return db
 
 
 def initialize_database():
+
     with get_db() as db:
 
         db.execute("""
@@ -45,7 +57,8 @@ def initialize_database():
                 username TEXT NOT NULL,
                 avatar TEXT,
                 message TEXT NOT NULL,
-                message_time TEXT NOT NULL
+                message_time TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
@@ -54,17 +67,23 @@ def initialize_database():
 
 initialize_database()
 
-# =====================================
-# ONLINE USERS
-# =====================================
+# ==========================================
+# HELPERS
+# ==========================================
 
-online_users = {}
+def get_current_user():
 
-# =====================================
-# CHAT HISTORY
-# =====================================
+    with users_lock:
+        return online_users.get(request_sid())
 
-def get_message_history(limit=100):
+
+def request_sid():
+
+    from flask import request
+    return request.sid
+
+
+def get_history(limit=100):
 
     with get_db() as db:
 
@@ -79,7 +98,7 @@ def get_message_history(limit=100):
         {
             "id": row["id"],
             "username": row["username"],
-            "avatar": row["avatar"],
+            "avatar": row["avatar"] or "",
             "text": row["message"],
             "time": row["message_time"]
         }
@@ -87,24 +106,24 @@ def get_message_history(limit=100):
     ]
 
 
-# =====================================
-# SAVE MESSAGE
-# =====================================
-
-def save_message(username, avatar, message):
+def save_message(username, avatar, text):
 
     message_time = datetime.now().strftime("%H:%M")
 
     with get_db() as db:
 
         cursor = db.execute("""
-            INSERT INTO messages
-            (username, avatar, message, message_time)
+            INSERT INTO messages (
+                username,
+                avatar,
+                message,
+                message_time
+            )
             VALUES (?, ?, ?, ?)
         """, (
             username,
             avatar,
-            message,
+            text,
             message_time
         ))
 
@@ -116,122 +135,126 @@ def save_message(username, avatar, message):
         "id": message_id,
         "username": username,
         "avatar": avatar,
-        "text": message,
+        "text": text,
         "time": message_time
     }
 
 
-# =====================================
-# ONLINE COUNT
-# =====================================
-
 def broadcast_online_count():
 
-    count = len(online_users)
+    with users_lock:
+        count = len(online_users)
 
     socketio.emit(
         "update_user_count",
-        count,
-        to=None
+        count
     )
 
 
-# =====================================
+# ==========================================
 # USER JOIN
-# =====================================
+# ==========================================
 
 @socketio.on("join_chat")
 def join_chat(data):
 
+    if not isinstance(data, dict):
+        return
+
     username = str(
-        data.get("username", "عضو")
+        data.get("username", "")
     ).strip()[:50]
 
     avatar = str(
         data.get("avatar", "")
-    ).strip()[:500]
+    ).strip()[:1000]
 
     if not username:
         return
 
-    online_users[request.sid] = {
-        "username": username,
-        "avatar": avatar
-    }
+    with users_lock:
+
+        online_users[request_sid()] = {
+            "username": username,
+            "avatar": avatar
+        }
 
     emit(
         "load_history",
-        get_message_history()
+        get_history()
     )
 
     broadcast_online_count()
 
-    emit(
+    socketio.emit(
         "system_notification",
         {
             "username": username,
             "text": "انضم إلى الجروب"
         },
-        broadcast=True,
-        include_self=False
+        skip_sid=request_sid()
     )
 
 
-# =====================================
-# RECEIVE AND BROADCAST MESSAGE
-# =====================================
+# ==========================================
+# SEND REAL MESSAGE
+# ==========================================
 
 @socketio.on("send_message")
 def send_message(data):
 
-    if request.sid not in online_users:
+    if not isinstance(data, dict):
         return
 
-    user = online_users[request.sid]
+    user = get_current_user()
 
-    message = str(
+    if not user:
+        return
+
+    text = str(
         data.get("text", "")
     ).strip()
 
-    if not message:
+    if not text or len(text) > 4000:
         return
 
-    if len(message) > 4000:
-        return
-
-    saved_message = save_message(
+    message = save_message(
         username=user["username"],
         avatar=user["avatar"],
-        message=message
+        text=text
     )
 
     socketio.emit(
         "receive_message",
-        saved_message,
-        to=None
+        message
     )
 
 
-# =====================================
+# ==========================================
 # EDIT MESSAGE
-# =====================================
+# ==========================================
 
 @socketio.on("edit_message")
 def edit_message(data):
 
-    if request.sid not in online_users:
+    if not isinstance(data, dict):
+        return
+
+    user = get_current_user()
+
+    if not user:
         return
 
     message_id = data.get("id")
-    new_text = str(data.get("text", "")).strip()
+    new_text = str(
+        data.get("text", "")
+    ).strip()
 
     if not message_id or not new_text:
         return
 
     if len(new_text) > 4000:
         return
-
-    username = online_users[request.sid]["username"]
 
     with get_db() as db:
 
@@ -242,7 +265,7 @@ def edit_message(data):
         """, (
             new_text,
             message_id,
-            username
+            user["username"]
         ))
 
         db.commit()
@@ -255,27 +278,29 @@ def edit_message(data):
         {
             "id": message_id,
             "text": new_text
-        },
-        to=None
+        }
     )
 
 
-# =====================================
+# ==========================================
 # DELETE MESSAGE
-# =====================================
+# ==========================================
 
 @socketio.on("delete_message")
 def delete_message(data):
 
-    if request.sid not in online_users:
+    if not isinstance(data, dict):
+        return
+
+    user = get_current_user()
+
+    if not user:
         return
 
     message_id = data.get("id")
 
     if not message_id:
         return
-
-    username = online_users[request.sid]["username"]
 
     with get_db() as db:
 
@@ -284,7 +309,7 @@ def delete_message(data):
             WHERE id = ? AND username = ?
         """, (
             message_id,
-            username
+            user["username"]
         ))
 
         db.commit()
@@ -294,25 +319,26 @@ def delete_message(data):
 
     socketio.emit(
         "message_deleted",
-        {"id": message_id},
-        to=None
+        {"id": message_id}
     )
 
 
-# =====================================
-# TYPING STATUS
-# =====================================
+# ==========================================
+# TYPING INDICATOR
+# ==========================================
 
 @socketio.on("typing")
 def typing(data):
 
-    if request.sid not in online_users:
+    user = get_current_user()
+
+    if not user:
         return
 
     emit(
         "user_typing",
         {
-            "username": online_users[request.sid]["username"],
+            "username": user["username"],
             "typing": bool(data.get("typing", False))
         },
         broadcast=True,
@@ -320,109 +346,102 @@ def typing(data):
     )
 
 
-# =====================================
-# USER DISCONNECT
-# =====================================
+# ==========================================
+# DISCONNECT
+# ==========================================
 
 @socketio.on("disconnect")
 def disconnect():
 
-    user = online_users.pop(request.sid, None)
+    sid = request_sid()
+
+    with users_lock:
+        user = online_users.pop(sid, None)
 
     broadcast_online_count()
 
     if user:
 
-        emit(
+        socketio.emit(
             "system_notification",
             {
                 "username": user["username"],
                 "text": "غادر الجروب"
-            },
-            broadcast=True
+            }
         )
 
 
-# =====================================
-# MEMBERS API
-# =====================================
+# ==========================================
+# ONLINE MEMBERS API
+# ==========================================
 
 @app.route("/api/members")
 def members():
 
+    with users_lock:
+        users = list(online_users.values())
+
     return jsonify({
-        "count": len(online_users),
-        "members": list(online_users.values())
+        "count": len(users),
+        "members": users
     })
 
 
-# =====================================
-# HISTORY API
-# =====================================
+# ==========================================
+# MESSAGE HISTORY API
+# ==========================================
 
 @app.route("/api/history")
 def history():
 
     return jsonify({
-        "messages": get_message_history()
+        "messages": get_history(200)
     })
 
 
-# =====================================
+# ==========================================
 # SERVER STATUS
-# =====================================
+# ==========================================
 
 @app.route("/api/status")
 def status():
 
+    with users_lock:
+        count = len(online_users)
+
     return jsonify({
         "server": "Royal Chat",
         "status": "online",
-        "online_users": len(online_users),
+        "online_users": count,
         "database": "connected",
-        "messaging": "enabled"
+        "messaging": "active"
     })
 
 
-# =====================================
-# HOME
-# =====================================
+# ==========================================
+# HEALTH CHECK
+# ==========================================
 
 @app.route("/")
 def home():
 
-    return """
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Royal Chat Server</title>
-    </head>
-    <body style="
-        background:#101010;
-        color:#ffd700;
-        text-align:center;
-        font-family:Arial;
-        padding:50px;
-    ">
-        <h1>👑 Royal Chat</h1>
-        <h2>السيرفر يعمل بنجاح</h2>
-        <p>نظام استقبال وإرسال الرسائل نشط</p>
-        <p>قاعدة البيانات متصلة</p>
-        <a href="/api/status" style="color:white">
-            Server Status
-        </a>
-    </body>
-    </html>
-    """
+    return jsonify({
+        "name": "Royal Chat",
+        "status": "running",
+        "socketio": "enabled",
+        "database": "connected"
+    })
 
 
-# =====================================
+# ==========================================
 # START SERVER
-# =====================================
+# ==========================================
 
 if __name__ == "__main__":
 
-    port = int(os.environ.get("PORT", 5000))
+    port = int(
+        os.environ.get("PORT", 5000)
+    )
 
     socketio.run(
         app,
