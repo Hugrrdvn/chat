@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>جروب تعارف ودردشة الملكي | الدردشة الرسمية</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
 
@@ -25,10 +24,11 @@ body {
     flex-direction: column;
     align-items: center; 
     justify-content: flex-start;
-    padding: 10px 0 16px 0;
+    padding: 10px 0 16px 0; /* مساحة أمان مريحة للأسفل والأعلى */
     position: relative;
 }
 
+/* إطار ملكي فخم جداً ومزدوج يحيط بالشاشة */
 body::before {
     content: '';
     position: fixed;
@@ -50,6 +50,7 @@ body::after {
     border-radius: 14px;
 }
 
+/* حاوية الرأس العلوية الملكية (متباعدة عن الإطار العلوي) */
 .header-wrapper {
     width: 90%;
     max-width: 390px;
@@ -123,6 +124,7 @@ body::after {
     border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
+/* شارة النشيطين مع نبض ذهبي فاخر */
 .external-active-badge {
     align-self: flex-start;
     background-color: rgba(12, 12, 12, 0.85);
@@ -166,6 +168,7 @@ body::after {
     z-index: 10;
 }
 
+/* منطقة الرسائل */
 .chat-messages-container {
     flex: 1;
     width: 90%;
@@ -231,6 +234,7 @@ body::after {
     box-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
 
+/* فقرة الرسالة مصغرة وأنيقة */
 .message-bubble {
     border-radius: 14px;
     padding: 5px 10px 5px 10px; 
@@ -278,19 +282,20 @@ body::after {
     color: #707579;
 }
 
+/* علامات الصح: أسود غامض، وعند القراءة تتحول لخطين أخضر زاهي ممتاز */
 .msg-ticks {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 900;
-    color: #707579;
+    color: #222222; 
     cursor: pointer;
-    transition: color 0.3s ease;
 }
 
 .msg-ticks.seen {
-    color: #00e676 !important;
+    color: #00e676; 
     text-shadow: 0 0 6px rgba(0, 230, 118, 0.6);
 }
 
+/* رسالة النظام */
 .system-msg {
     align-self: center;
     background: rgba(212, 175, 55, 0.15);
@@ -305,6 +310,48 @@ body::after {
     box-shadow: 0 3px 10px rgba(0,0,0,0.6), 0 0 12px rgba(212, 175, 55, 0.25);
 }
 
+/* مؤشر الكتابة في مكانه الطبيعي الفخم */
+.typing-indicator-box {
+    align-self: flex-start;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: rgba(12, 12, 12, 0.92);
+    border: 1.2px solid #d4af37;
+    padding: 6px 12px;
+    border-radius: 16px;
+    color: #ffd700;
+    font-size: 11px;
+    font-weight: bold;
+    margin-top: 4px;
+    margin-bottom: 6px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.7), 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.typing-dots span {
+    width: 4.5px;
+    height: 4.5px;
+    background-color: #ffd700;
+    border-radius: 50%;
+    display: inline-block;
+    animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.2); }
+}
+
+/* شريط اقتراحات الرسائل السريعة الفخم والمتنوع جداً */
 .quick-suggestions-bar {
     width: 90%;
     max-width: 390px;
@@ -315,7 +362,7 @@ body::after {
     flex-shrink: 0;
     z-index: 10;
     scrollbar-width: none;
-    margin-bottom: 4px;
+    margin-bottom: 4px; /* مسافة مرتفعة للأعلى عن حافة الشاشة */
 }
 .quick-suggestions-bar::-webkit-scrollbar { display: none; }
 
@@ -336,8 +383,10 @@ body::after {
 .suggestion-chip:hover {
     background: #d4af37;
     color: #000000;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.8);
 }
 
+/* شريط إدخال الرسائل السفلي (مرتفع للأعلى قليلاً، ومحاط بإطار ذهبي زجاجي فخم جداً) */
 .chat-input-bar {
     width: 90%;
     max-width: 390px;
@@ -349,7 +398,7 @@ body::after {
     border-radius: 28px;
     border: 2px solid #d4af37;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(212, 175, 55, 0.45);
-    margin-bottom: 12px;
+    margin-bottom: 12px; /* تم رفعه للأعلى بشكل ممتاز */
     flex-shrink: 0;
     z-index: 10;
 }
@@ -360,6 +409,7 @@ body::after {
     cursor: pointer;
     background: none;
     border: none;
+    filter: drop-shadow(0 0 5px rgba(212,175,55,0.4));
 }
 
 .message-input-field {
@@ -369,6 +419,10 @@ body::after {
     color: #ffffff;
     font-size: 14.5px;
     outline: none;
+}
+
+.message-input-field::placeholder {
+    color: #888;
 }
 
 .send-btn {
@@ -384,8 +438,10 @@ body::after {
     font-size: 15px;
     cursor: pointer;
     border: none;
+    box-shadow: 0 3px 12px rgba(212, 175, 55, 0.7);
 }
 
+/* نافذة تعديل الرسالة الملكية المخصصة (بدلاً من نافذة المتصفح البيضاء العادية) */
 #custom-edit-modal {
     display: none;
     position: fixed;
@@ -407,6 +463,8 @@ body::after {
     display: flex;
     flex-direction: column;
     gap: 14px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.95), 0 0 30px rgba(212, 175, 55, 0.5);
+    animation: popUp 0.2s ease-out;
 }
 
 .edit-modal-title {
@@ -416,9 +474,10 @@ body::after {
     text-align: center;
 }
 
+/* خانة التعديل البيضاء الفخمة */
 .edit-modal-input {
     width: 100%;
-    background: #ffffff;
+    background: #ffffff; /* أبيض نقي وفخم */
     color: #000000;
     border: 2px solid #d4af37;
     border-radius: 14px;
@@ -426,11 +485,13 @@ body::after {
     font-size: 15px;
     font-weight: 600;
     outline: none;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .edit-modal-buttons {
     display: flex;
     gap: 10px;
+    margin-top: 4px;
 }
 
 .edit-modal-btn {
@@ -443,14 +504,24 @@ body::after {
     border: none;
 }
 
-.edit-modal-btn.cancel { background: rgba(255,255,255,0.1); color: #ccc; }
-.edit-modal-btn.save { background: linear-gradient(135deg, #ffea9f, #d4af37, #8c6302); color: #000; }
+.edit-modal-btn.cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cccccc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
+.edit-modal-btn.save {
+    background: linear-gradient(135deg, #ffea9f, #d4af37, #8c6302);
+    color: #000000;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.5);
+}
+
+/* قائمة الخيارات الملكية للرسائل */
 #msg-action-menu {
     display: none;
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.65);
+    background: rgba(0, 0, 0, 0.65);
     z-index: 2000;
     justify-content: center;
     align-items: center;
@@ -462,17 +533,41 @@ body::after {
     border-radius: 25px;
     padding: 12px 28px;
     display: flex;
+    align-items: center;
     gap: 30px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.9), 0 0 25px rgba(212, 175, 55, 0.5);
+    animation: popUp 0.2s ease-out;
 }
 
-.action-icon-btn { background: none; border: none; cursor: pointer; font-size: 22px; color: #ffd700; }
+@keyframes popUp {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
 
+.action-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    color: #ffd700;
+    transition: transform 0.1s;
+}
+
+.action-icon-btn:active {
+    transform: scale(0.85);
+}
+
+/* واجهة معلومات الجروب والبروفايل */
 #group-profile-modal {
     display: none; 
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background-color: #0b0b0b; 
-    color: #fff;
+    color: #ffffff;
     z-index: 1000;
     overflow-y: auto;
     flex-direction: column;
@@ -480,34 +575,192 @@ body::after {
     padding-bottom: 40px;
 }
 
-.profile-top-bar { width: 100%; max-width: 480px; display: flex; justify-content: space-between; padding: 15px 20px; }
-.profile-back-btn, .profile-menu-btn { font-size: 22px; color: #ffd700; background: none; border: none; cursor: pointer; }
-.profile-big-avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 3px solid #ffd700; }
-.profile-info-section { text-align: center; margin-top: 14px; }
-.profile-info-section h2 { font-size: 20px; font-weight: 900; color: #ffd700; }
-.profile-info-section span { font-size: 13px; color: #aaa; margin-top: 4px; display: block; }
+.profile-top-bar {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
 
-.profile-actions-row { display: flex; justify-content: center; gap: 10px; margin-top: 20px; width: 92%; max-width: 440px; }
-.action-card { flex: 1; background: rgba(20,20,20,0.9); border: 1px solid rgba(212,175,55,0.4); border-radius: 16px; padding: 12px 6px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+.profile-back-btn, .profile-menu-btn {
+    font-size: 22px;
+    color: #ffd700;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.profile-big-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-top: 5px;
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+}
+
+.profile-info-section {
+    text-align: center;
+    margin-top: 14px;
+}
+
+.profile-info-section h2 {
+    font-size: 20px;
+    font-weight: 900;
+    color: #ffd700;
+}
+
+.profile-info-section span {
+    font-size: 13px;
+    color: #aaa;
+    margin-top: 4px;
+    display: block;
+}
+
+.profile-actions-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    width: 92%;
+    max-width: 440px;
+}
+
+.action-card {
+    flex: 1;
+    background: rgba(20, 20, 20, 0.9); 
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 16px;
+    padding: 12px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
 .action-card span:first-child { font-size: 22px; }
-.action-card span:last-child { font-size: 11px; font-weight: 700; color: #ffd700; }
+.action-card span:last-child { font-size: 11px; font-weight: 700; color: #ffd700; text-align: center; }
 
-.invite-link-section { width: 92%; max-width: 440px; background: rgba(20,20,20,0.9); border: 1px solid rgba(212,175,55,0.4); border-radius: 16px; padding: 14px 18px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+.invite-link-section {
+    width: 92%;
+    max-width: 440px;
+    background: rgba(20, 20, 20, 0.9); 
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
 
-.members-list-container { width: 92%; max-width: 440px; margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-.members-title { font-size: 14px; color: #ffd700; font-weight: bold; margin-bottom: 4px; }
-.member-item { display: flex; align-items: center; padding: 12px 16px; gap: 14px; background: rgba(18,18,18,0.9); border: 1px solid rgba(212,175,55,0.25); border-radius: 16px; }
-.member-avatar-wrapper { position: relative; width: 45px; height: 45px; flex-shrink: 0; }
-.member-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 1.5px solid #ffd700; }
-.online-indicator { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: #2ecc71; border: 2px solid #000; border-radius: 50%; }
-.member-details { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-.member-name { font-size: 15px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.member-status { font-size: 12px; color: #2ecc71; font-weight: 700; margin-top: 2px; }
-.owner-badge { background: rgba(212,175,55,0.2); color: #ffd700; border: 1px solid #ffd700; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: bold; width: fit-content; margin-top: 3px; }
+.invite-link-info span:first-child { font-size: 14px; color: #ffd700; font-weight: 700; }
+.invite-link-info span:last-child { font-size: 11px; color: #aaa; display: block; margin-top: 2px;}
+
+.members-list-container {
+    width: 92%;
+    max-width: 440px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.members-title {
+    font-size: 14px;
+    color: #ffd700;
+    font-weight: bold;
+    margin-bottom: 4px;
+    margin-right: 4px;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 14px;
+    background: rgba(18, 18, 18, 0.9); 
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.member-avatar-wrapper {
+    position: relative;
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+}
+
+.member-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #ffd700;
+}
+
+.online-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background-color: #2ecc71;
+    border: 2px solid #000;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(46, 204, 113, 0.9);
+}
+
+.member-details {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.member-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.member-status {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 2px;
+}
+
+.member-status.online {
+    color: #2ecc71;
+    font-weight: 700;
+}
+
+.owner-badge {
+    background: rgba(212, 175, 55, 0.2);
+    color: #ffd700;
+    border: 1px solid #ffd700;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    width: fit-content;
+    margin-top: 3px;
+}
 </style>
 </head>
 <body>
 
+<!-- الكبسولة العلوية للشات (منخفضة تماماً ولا تتداخل مع الإطار الخارجي) -->
 <div class="header-wrapper">
     <div class="telegram-header-box">
         <div class="th-right" onclick="openProfile()">
@@ -518,27 +771,61 @@ body::after {
         </div>
         <div class="th-left" onclick="openProfile()">🔍</div>
     </div>
+
+    <!-- شارة النشيطين التفاعلية -->
     <div class="external-active-badge">
-        <span class="pulse-dot"></span> <span id="onlineCountText">1 متصلاً الآن</span>
+        <span class="pulse-dot"></span> <span id="onlineCountText">120 متصلاً الآن</span>
     </div>
 </div>
 
 <div class="chat-divider"></div>
 
+<!-- منطقة الرسائل -->
 <div class="chat-messages-container" id="messagesContainer">
     <div class="system-msg">⭐ أهلاً بكم في جروب تعارف ودردشة الملكي الفاخر ⭐</div>
+
+    <div class="message-row incoming" oncontextmenu="showMenu(event, false)">
+        <img class="msg-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" alt="صورة العضو">
+        <div class="message-bubble">
+            <span class="msg-sender">ياسمين إبراهيم</span>
+            <span class="msg-text">منورين الجروب يا جماعة ✨</span>
+            <span class="msg-time">٩:٢٧ ص</span>
+        </div>
+    </div>
+
+    <div class="message-row outgoing" oncontextmenu="showMenu(event, true)">
+        <img class="msg-avatar" id="myChatAvatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900" alt="صورتك">
+        <div class="message-bubble">
+            <span class="msg-sender" id="myChatUsername">أحمد محمد (أنت)</span>
+            <span class="msg-text">أهلاً بالجميع، الجروب فخم جداً وراقي ✨</span>
+            <div class="msg-footer">
+                <span class="msg-ticks seen" onclick="toggleSeen(this)" title="حالة القراءة">✓✓</span>
+                <span class="msg-time">٩:٣٠ ص</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- مؤشر الكتابة الطبيعي الأنيق -->
+    <div class="typing-indicator-box" id="typingIndicator">
+        <span>ياسمين تكتب الآن</span>
+        <div class="typing-dots">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
 </div>
 
+<!-- شريط اقتراحات الرسائل السريعة الفخم والمتنوع جداً -->
 <div class="quick-suggestions-bar">
     <div class="suggestion-chip" onclick="sendSuggestion('مساكم الله بالخير 🌹')">🌹 مساكم الله بالخير</div>
     <div class="suggestion-chip" onclick="sendSuggestion('منورين جميعاً ✨')">✨ منورين جميعاً</div>
     <div class="suggestion-chip" onclick="sendSuggestion('كيف حالكم يا أصدقاء؟ 👋')">👋 كيف حالكم؟</div>
     <div class="suggestion-chip" onclick="sendSuggestion('سهرة ممتعة للجميع ☕')">☕ سهرة ممتعة</div>
     <div class="suggestion-chip" onclick="sendSuggestion('وعليكم السلام ورحمة الله 🤍')">🤍 وعليكم السلام</div>
-    <div class="suggestion-chip" onclick="sendSuggestion('تبارك الرحمن إبداع 🔥')">🔥 إبداع</div>
+    <div class="suggestion-chip" onclick="sendSuggestion('تبارك الرحمن إبداع 🔥')">🔥 تبارك الرحمن إبداع</div>
     <div class="suggestion-chip" onclick="sendSuggestion('يسعد مساكم بكل خير ⭐')">⭐ يسعد مساكم</div>
 </div>
 
+<!-- نافذة تعديل الرسالة الملكية المخصصة (إطار فخم وخانة بيضاء أنيقة) -->
 <div id="custom-edit-modal">
     <div class="edit-modal-box">
         <div class="edit-modal-title">✏️ تعديل الرسالة الملكية</div>
@@ -550,6 +837,7 @@ body::after {
     </div>
 </div>
 
+<!-- قائمة تيليجرام العائمة للخيارات -->
 <div id="msg-action-menu" onclick="hideMenu(event)">
     <div class="telegram-action-bubble">
         <button class="action-icon-btn" id="editBtn" title="تعديل" onclick="openEditModal()">✏️</button>
@@ -557,6 +845,7 @@ body::after {
     </div>
 </div>
 
+<!-- شريط إدخال الرسائل السفلي (مرتفع للأعلى وفي إطار فخم وزجاجي متوهج) -->
 <div class="chat-input-bar">
     <button class="input-icon">😊</button>
     <input type="text" id="messageInput" class="message-input-field" placeholder="اكتب رسالة..." autocomplete="off">
@@ -564,29 +853,47 @@ body::after {
     <button class="send-btn" onclick="sendMessage()">➤</button>
 </div>
 
+<!-- واجهة معلومات الجروب -->
 <div id="group-profile-modal">
     <div class="profile-top-bar">
         <button class="profile-back-btn" onclick="closeProfile()">←</button>
         <button class="profile-menu-btn">⋮</button>
     </div>
+
     <img class="profile-big-avatar" src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=900" alt="صورة الجروب">
+
     <div class="profile-info-section">
         <h2>جروب تعارف ودردشة الملكي</h2>
-        <span id="membersCountText">١ عضواً، ١ متصلاً</span>
+        <span id="membersCountText">١٣٢٨ عضواً، ١٢٠ متصلاً</span>
     </div>
+
     <div class="profile-actions-row">
-        <div class="action-card" onclick="closeProfile()"><span>💬</span><span>مراسلة</span></div>
-        <div class="action-card"><span>🔕</span><span>إلغاء الكتم</span></div>
-        <div class="action-card"><span>📹</span><span>مرئية</span></div>
-        <div class="action-card" onclick="alert('أنت مالك الجروب الملكي!')"><span>👑</span><span>المالك</span></div>
+        <div class="action-card" onclick="closeProfile()">
+            <span>💬</span>
+            <span>مراسلة</span>
+        </div>
+        <div class="action-card">
+            <span>🔕</span>
+            <span>إلغاء الكتم</span>
+        </div>
+        <div class="action-card">
+            <span>📹</span>
+            <span>مرئية</span>
+        </div>
+        <div class="action-card" onclick="alert('أنت مالك الجروب الملكي!')">
+            <span>👑</span>
+            <span>المالك</span>
+        </div>
     </div>
+
     <div class="invite-link-section">
         <div class="invite-link-info">
-            <span style="font-size: 14px; color: #ffd700; font-weight: 700;">t.me/RoyalChat2026</span>
-            <span style="font-size: 11px; color: #aaa;">رابط الدعوة الملكي</span>
+            <span>t.me/RoyalChat2026</span>
+            <span>رابط الدعوة الملكي</span>
         </div>
         <span style="font-size: 18px; color: #ffd700;">🔗</span>
     </div>
+
     <div class="members-list-container">
         <div class="members-title">قائمة الأعضاء المتواجدين</div>
         <div id="dynamicMembersList"></div>
@@ -594,13 +901,13 @@ body::after {
 </div>
 
 <script>
-    const socket = io();
     let currentSelectedMessage = null;
     let currentUser = {
         username: "أحمد محمد",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900"
     };
 
+    // تشغيل صوت تنبيه تيليجرام حقيقي
     function playTelegramSound() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -628,67 +935,91 @@ body::after {
             } catch(e) {}
         }
 
-        socket.emit('join_chat', {
-            username: currentUser.username,
-            avatar: currentUser.avatar
-        });
+        document.getElementById('myChatUsername').textContent = currentUser.username + " (أنت)";
+        document.getElementById('myChatAvatar').src = currentUser.avatar;
+
+        let users = JSON.parse(localStorage.getItem('classic_users')) || [];
+        if(!users.some(u => u.username === currentUser.username)) {
+            users.push(currentUser);
+            localStorage.setItem('classic_users', JSON.stringify(users));
+        }
+
+        renderMembersList(users);
+        showJoinSystemMessage(currentUser.username);
+
+        setInterval(() => {
+            const typingBox = document.getElementById('typingIndicator');
+            typingBox.style.display = 'flex';
+            setTimeout(() => {
+                typingBox.style.display = 'none';
+            }, 3500);
+        }, 14000);
     };
 
-    socket.on('load_history', function(history) {
-        const container = document.getElementById('messagesContainer');
-        history.forEach(msg => {
-            appendMessageToDOM(msg, false);
+    function openProfile() {
+        document.getElementById('group-profile-modal').style.display = 'flex';
+    }
+    function closeProfile() {
+        document.getElementById('group-profile-modal').style.display = 'none';
+    }
+
+    function renderMembersList(users) {
+        const container = document.getElementById('dynamicMembersList');
+        let html = '';
+
+        html += `
+        <div class="member-item">
+            <div class="member-avatar-wrapper">
+                <img class="member-avatar" src="${currentUser.avatar}" alt="عضو">
+                <div class="online-indicator"></div>
+            </div>
+            <div class="member-details">
+                <span class="member-name">${currentUser.username} (أنت)</span>
+                <span class="member-status online">متصل الآن</span>
+                <div class="owner-badge">المالك الملكي</div>
+            </div>
+        </div>`;
+
+        users.forEach(u => {
+            if(u.username !== currentUser.username) {
+                html += `
+                <div class="member-item">
+                    <div class="member-avatar-wrapper">
+                        <img class="member-avatar" src="${u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900'}" alt="عضو">
+                        <div class="online-indicator"></div>
+                    </div>
+                    <div class="member-details">
+                        <span class="member-name">${u.username}</span>
+                        <span class="member-status online">متصل الآن</span>
+                    </div>
+                </div>`;
+            }
         });
-    });
 
-    socket.on('receive_message', function(msg) {
-        appendMessageToDOM(msg, true);
-        playTelegramSound();
-    });
+        container.innerHTML = html;
+        const totalCount = 1327 + users.length;
+        document.getElementById('membersCountText').textContent = `${totalCount} عضواً، ١٢٠ متصلاً`;
+        document.getElementById('onlineCountText').textContent = `${119 + users.length} متصلاً الآن`;
+    }
 
-    socket.on('update_real_users', function(data) {
-        renderMembersList(data.users, data.count);
-    });
-
-    socket.on('system_notification', function(data) {
+    function showJoinSystemMessage(name) {
         const container = document.getElementById('messagesContainer');
         const sysMsg = document.createElement('div');
         sysMsg.className = 'system-msg';
-        sysMsg.textContent = data.message;
-        container.appendChild(sysMsg);
-        container.scrollTop = container.scrollHeight;
-    });
-
-    function openProfile() { document.getElementById('group-profile-modal').style.display = 'flex'; }
-    function closeProfile() { document.getElementById('group-profile-modal').style.display = 'none'; }
-
-    function renderMembersList(users, count) {
-        const container = document.getElementById('dynamicMembersList');
-        let html = '';
-        users.forEach(u => {
-            let isMe = (u.username === currentUser.username);
-            html += `
-            <div class="member-item">
-                <div class="member-avatar-wrapper">
-                    <img class="member-avatar" src="${u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900'}" alt="عضو">
-                    <div class="online-indicator"></div>
-                </div>
-                <div class="member-details">
-                    <span class="member-name">${u.username} ${isMe ? '(أنت)' : ''}</span>
-                    <span class="member-status">${u.status}</span>
-                    ${isMe ? '<div class="owner-badge">المالك الملكي</div>' : ''}
-                </div>
-            </div>`;
-        });
-        container.innerHTML = html;
-        document.getElementById('membersCountText').textContent = `${count} عضواً متصلاً`;
-        document.getElementById('onlineCountText').textContent = `${count} متصلاً الآن`;
+        sysMsg.textContent = `✨ انضم "${name}" إلى الجروب الملكي`;
+        container.insertBefore(sysMsg, container.firstChild.nextSibling);
     }
 
     function showMenu(e, isOutgoing) {
         e.preventDefault();
         currentSelectedMessage = e.currentTarget;
+        
+        const editBtn = document.getElementById('editBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+
         if(isOutgoing) {
+            editBtn.style.display = 'flex';
+            deleteBtn.style.display = 'flex';
             document.getElementById('msg-action-menu').style.display = 'flex';
         }
     }
@@ -699,6 +1030,7 @@ body::after {
         }
     }
 
+    // فتح نافذة التعديل الملكية المخصصة بدلاً من نافذة المتصفح العادية
     function openEditModal() {
         if(!currentSelectedMessage) return;
         document.getElementById('msg-action-menu').style.display = 'none';
@@ -729,9 +1061,11 @@ body::after {
     function toggleSeen(el) {
         if(el.classList.contains('seen')) {
             el.classList.remove('seen');
-            el.style.color = '#707579';
+            el.textContent = '✓';
+            el.style.color = '#222222';
         } else {
             el.classList.add('seen');
+            el.textContent = '✓✓';
             el.style.color = '#00e676';
         }
     }
@@ -746,36 +1080,29 @@ body::after {
         const text = input.value.trim();
         if(!text) return;
 
-        socket.emit('send_message', {
-            username: currentUser.username,
-            avatar: currentUser.avatar,
-            message: text
-        });
+        playTelegramSound();
 
-        input.value = '';
-    }
-
-    function appendMessageToDOM(msg) {
         const container = document.getElementById('messagesContainer');
-        let isOutgoing = (msg.username.includes(currentUser.username) || msg.sender_sid === socket.id);
-
+        const typingBox = document.getElementById('typingIndicator');
         const row = document.createElement('div');
-        row.className = isOutgoing ? 'message-row outgoing' : 'message-row incoming';
-        row.oncontextmenu = (e) => showMenu(e, isOutgoing);
+        row.className = 'message-row outgoing';
+        row.oncontextmenu = (e) => showMenu(e, true);
+        row.onclick = (e) => showMenu(e, true);
 
         row.innerHTML = `
-            <img class="msg-avatar" src="${msg.avatar}" alt="صورة">
+            <img class="msg-avatar" src="${currentUser.avatar}" alt="صورتك">
             <div class="message-bubble">
-                <span class="msg-sender">${msg.username}</span>
-                <span class="msg-text">${msg.message}</span>
+                <span class="msg-sender">${currentUser.username} (أنت)</span>
+                <span class="msg-text">${text}</span>
                 <div class="msg-footer">
                     <span class="msg-ticks seen" onclick="toggleSeen(this)" title="حالة القراءة">✓✓</span>
-                    <span class="msg-time">${msg.time}</span>
+                    <span class="msg-time">الآن</span>
                 </div>
             </div>
         `;
 
-        container.appendChild(row);
+        container.insertBefore(row, typingBox);
+        input.value = '';
         container.scrollTop = container.scrollHeight;
     }
 </script>
