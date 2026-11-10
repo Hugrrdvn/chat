@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'royal_secret_key_2026'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+# قوائم تخزين المتصلين والرسائل الحية
 active_users = {}
 messages_history = []
 
@@ -23,14 +24,20 @@ def handle_join(data):
     username = data.get('username') or "عضو ملكي"
     avatar = data.get('avatar') or "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900"
     
+    # تسجيل المستخدم الحالي في الجلسة النشطة
     active_users[request.sid] = {
         'username': username,
         'avatar': avatar,
         'status': 'متصل الآن'
     }
     
+    # تحديث وتذاعة قائمة المتصلين للجميع فوراً لكي يظهر الرقم الصحيح (مثل 1 أو أكثر)
     broadcast_active_users()
+    
+    # إرسال الرسائل السابقة للمستخدم الجديد فقط
     emit('load_history', messages_history)
+    
+    # إشعار انضمام
     emit('system_notification', {'message': f'✨ انضم "{username}" إلى الجروب الملكي'}, broadcast=True)
 
 @socketio.on('send_message')
@@ -38,6 +45,7 @@ def handle_message(data):
     username = data.get('username') or "عضو ملكي"
     avatar = data.get('avatar') or "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900"
     message = data.get('message')
+    
     if not message:
         return
         
@@ -52,10 +60,12 @@ def handle_message(data):
         'status': 'sent'
     }
     
+    # حفظ الرسالة في السجل لكي لا تضيع
     messages_history.append(msg_data)
     if len(messages_history) > 100:
         messages_history.pop(0)
         
+    # بث الرسالة فوراً لجميع المتصلين في الشات لكي تظهر وتستقر
     emit('receive_message', msg_data, broadcast=True)
 
 @socketio.on('disconnect')
@@ -68,6 +78,7 @@ def handle_disconnect():
 def broadcast_active_users():
     users_list = list(active_users.values())
     total_online = len(users_list)
+    # إرسال الأسماء والعدد الحقيقي للواجهة
     emit('update_real_users', {
         'users': users_list,
         'count': total_online
