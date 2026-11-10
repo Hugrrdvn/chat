@@ -6,18 +6,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'royal_chat_secret_key_2026'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# ذاكرة مؤقتة لتخزين الرسائل والأعضاء المتصلين
 messages_history = []
 connected_users = {}
 
 @app.route('/')
 def index():
-    # يعرض صفحة تسجيل الدخول أولاً (أو يمكن تعديلها حسب رغبتك)
-    return render_template('register.html')
-
-@app.route('/chat')
-def chat():
-    # يعرض صفحة الدردشة الرسمية
     return render_template('chat.html')
 
 @socketio.on('join_chat')
@@ -56,12 +49,12 @@ def handle_send_message(data):
 def handle_edit_message(data):
     msg_id = data.get('id')
     new_text = data.get('message')
-    
+
     for msg in messages_history:
         if msg['id'] == msg_id:
             msg['message'] = new_text
             break
-            
+
     socketio.emit('message_edited', {'id': msg_id, 'message': new_text})
 
 @socketio.on('delete_message')
