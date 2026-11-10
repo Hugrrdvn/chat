@@ -598,7 +598,7 @@ body::after {
 .owner-badge { background: rgba(212, 175, 55, 0.2); color: #ffd700; border: 1px solid #ffd700; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: bold; width: fit-content; margin-top: 3px; }
 </style>
 
-<!-- تضمين مكتبة Socket.IO الحية للربط الحقيقي -->
+<!-- تضمين مكتبة Socket.IO الحية للاتصال بالسيرفر -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
@@ -614,7 +614,7 @@ body::after {
         <div class="th-left" onclick="openProfile()">🔍</div>
     </div>
 
-    <!-- الشارة الخضراء الحقيقية للمتصلين -->
+    <!-- الشارة الخضراء للمتصلين -->
     <div class="external-active-badge">
         <span class="pulse-dot"></span> <span id="onlineCountText">جاري الاتصال...</span>
     </div>
@@ -660,6 +660,7 @@ body::after {
     <button class="send-btn" onclick="sendMessage()">➤</button>
 </div>
 
+<!-- واجهة معلومات الجروب (تظهر الأعضاء الحقيقيين بجانب المالك) -->
 <div id="group-profile-modal">
     <div class="profile-top-bar">
         <button class="profile-back-btn" onclick="closeProfile()">←</button>
@@ -689,7 +690,7 @@ body::after {
     </div>
 
     <div class="members-list-container">
-        <div class="members-title">قائمة الأعضاء المتواجدين الحقيقيين</div>
+        <div class="members-title">قائمة الأعضاء الحقيقيين المتواجدين</div>
         <div id="dynamicMembersList"></div>
     </div>
 </div>
@@ -698,7 +699,7 @@ body::after {
     const socket = io(); // الاتصال الحي بالسيرفر الحقيقي
     let currentSelectedMessage = null;
     let currentUser = {
-        username: "عضو ملكي " + Math.floor(Math.random() * 900 + 100),
+        username: "أحمد محمد (المالك)",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900"
     };
 
@@ -729,14 +730,13 @@ body::after {
             } catch(e) {}
         }
 
-        // إرسال طلب انضمام للسيرفر الحقيقي لكي يراك المتصلون الآخرون
+        // إرسال طلب انضمام للسيرفر ليراك الجميع في قائمة الأعضاء المتصلين
         socket.emit('join_chat', { username: currentUser.username, avatar: currentUser.avatar });
     };
 
-    // استقبال الرسائل التاريخية القديمة عند فتح الموقع
+    // استقبال الرسائل التاريخية السابقة عند الدخول
     socket.on('load_history', function(history) {
         const container = document.getElementById('messagesContainer');
-        // تفريغ الحاوية عدا رسالة الترحيب
         const welcomeMsg = container.querySelector('.system-msg');
         container.innerHTML = '';
         if(welcomeMsg) container.appendChild(welcomeMsg);
@@ -747,22 +747,24 @@ body::after {
         container.scrollTop = container.scrollHeight;
     });
 
-    // استقبال الرسائل الجديدة حية وفورية من السيرفر
+    // استقبال الرسائل الجديدة حية وفورية
     socket.on('receive_message', function(msg) {
         appendMessageToDOM(msg, true);
     });
 
-    // استقبال تحديث الأعضاء الحقيقيين والمتصلين في الواجهة والبروفايل
+    // جلب وعرض الأعضاء الحقيقيين في القائمة بجانب المالك وتحديث الشارة الخضراء
     socket.on('update_real_users', function(data) {
         const users = data.users;
         const count = data.count;
         
-        document.getElementById('onlineCountText55') || (document.getElementById('onlineCountText').textContent = count + " متصلاً الآن");
-        document.getElementById('membersCountText').textContent = count + " عضويتشغيل، متصل الآن";
+        document.getElementById('onlineCountText').textContent = count + " متصلاً الآن";
+        document.getElementById('membersCountText').textContent = count + " عضواً متصلاً الآن";
 
         const container = document.getElementById('dynamicMembersList');
         let html = '';
+
         users.forEach(u => {
+            const isOwner = u.username.includes("المالك") || u.username === "أحمد محمد (المالك)";
             html += `
             <div class="member-item">
                 <div class="member-avatar-wrapper">
@@ -772,13 +774,14 @@ body::after {
                 <div class="member-details">
                     <span class="member-name">${u.username}</span>
                     <span class="member-status">متصل الآن</span>
+                    ${isOwner ? '<div class="owner-badge">المالك الملكي</div>' : ''}
                 </div>
             </div>`;
         });
         container.innerHTML = html;
     });
 
-    // إشعارات النظام (انضمام / مغادرة)
+    // إشعارات انضمام أو مغادرة الأعضاء
     socket.on('system_notification', function(data) {
         const container = document.getElementById('messagesContainer');
         const sysMsg = document.createElement('div');
@@ -816,7 +819,6 @@ body::after {
         const text = input.value.trim();
         if(!text) return;
 
-        // إرسال الرسالة عبر السيرفر الحقيقي لتصل لكل المتصلين فوراً ولا تختفي
         socket.emit('send_message', {
             username: currentUser.username,
             avatar: currentUser.avatar,
