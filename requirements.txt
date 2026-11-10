@@ -1,3 +1,5 @@
 Flask
 flask-socketio
-simple-websocket
+gunicorn
+gevent
+gevent-websocket
