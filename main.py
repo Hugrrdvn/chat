@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import datetime
 from threading import Lock
 
@@ -32,100 +33,161 @@ def chat():
 
 
 # =====================================
-# دخول الأعضاء
+# User Connection
 # =====================================
 
 @socketio.on('join_chat')
 def handle_join(data):
 
     username = data.get('username') or 'عضو ملكي'
-
     avatar = data.get('avatar') or ''
 
     with data_lock:
-
         active_users[request.sid] = {
             'username': username,
             'avatar': avatar,
             'status': 'متصل الآن'
         }
 
-        history = list(messages_history)
+        history = [dict(message) for message in messages_history]
 
-    # إرسال سجل الرسائل للعضو الجديد
     emit('load_history', history)
 
-    # تحديث عدد المتصلين للجميع
     broadcast_active_users()
 
-    # إشعار دخول العضو
-    socketio.emit(
-        'system_notification',
-        {
-            'message': f'✨ انضم {username} إلى الجروب الملكي'
-        }
-    )
-
-    print(f'عضو جديد: {username}')
+    socketio.emit('system_notification', {
+        'message': f'✨ انضم {username} إلى الجروب الملكي'
+    })
 
 
 # =====================================
-# استقبال وإرسال الرسائل
+# Send Message
 # =====================================
 
 @socketio.on('send_message')
 def handle_message(data):
 
-    username = data.get('username') or 'عضو ملكي'
+    with data_lock:
+        user = active_users.get(request.sid)
 
-    avatar = data.get('avatar') or ''
+    if not user:
+        return
 
     message = str(data.get('message') or '').strip()
 
     if not message:
         return
 
-    # التأكد من أن المرسل متصل
-    with data_lock:
-        if request.sid not in active_users:
-            print('رفض رسالة من اتصال غير مسجل')
-            return
-
-    timestamp = datetime.now().strftime('%I:%M %p')
-
     msg_data = {
-        'username': username,
-        'avatar': avatar,
+        'id': str(uuid.uuid4()),
+        'username': user['username'],
+        'avatar': user['avatar'],
         'message': message,
-        'time': timestamp,
+        'time': datetime.now().strftime('%I:%M %p'),
         'sender_sid': request.sid,
         'status': 'sent'
     }
 
-    # حفظ الرسالة
     with data_lock:
-
         messages_history.append(msg_data)
 
         if len(messages_history) > 200:
             messages_history.pop(0)
 
-    # أهم جزء:
-    # إرسال الرسالة لجميع المتصلين في الموقع
-    # بما في ذلك الشخص الذي أرسل الرسالة
-
-    socketio.emit(
-        'receive_message',
-        msg_data
-    )
-
-    print(
-        f'تم بث الرسالة من {username}: {message}'
-    )
+    socketio.emit('receive_message', msg_data)
 
 
 # =====================================
-# تحديث المتصلين
+# Edit Message
+# =====================================
+
+@socketio.on('edit_message')
+def handle_edit_message(data):
+
+    message_id = str(data.get('id') or '')
+    new_text = str(data.get('message') or '').strip()
+
+    if not message_id or not new_text:
+        return
+
+    with data_lock:
+        target = next(
+            (message for message in messages_history
+             if message['id'] == message_id),
+            None
+        )
+
+        if not target or target['sender_sid'] != request.sid:
+            return
+
+        target['message'] = new_text
+        target['edited'] = True
+
+        updated_message = dict(target)
+
+    socketio.emit('message_edited', updated_message)
+
+
+# =====================================
+# Delete Message
+# =====================================
+
+@socketio.on('delete_message')
+def handle_delete_message(data):
+
+    message_id = str(data.get('id') or '')
+
+    if not message_id:
+        return
+
+    with data_lock:
+        target = next(
+            (message for message in messages_history
+             if message['id'] == message_id),
+            None
+        )
+
+        if not target or target['sender_sid'] != request.sid:
+            return
+
+        messages_history.remove(target)
+
+    socketio.emit('message_deleted', {
+        'id': message_id
+    })
+
+
+# =====================================
+# Read Message
+# =====================================
+
+@socketio.on('read_message')
+def handle_read_message(data):
+
+    message_id = str(data.get('id') or '')
+
+    if not message_id:
+        return
+
+    with data_lock:
+        target = next(
+            (message for message in messages_history
+             if message['id'] == message_id),
+            None
+        )
+
+        if not target:
+            return
+
+        target['status'] = 'seen'
+
+    socketio.emit('message_read', {
+        'id': message_id
+    })
+
+
+# =====================================
+# Update Online Users
 # =====================================
 
 def broadcast_active_users():
@@ -133,21 +195,14 @@ def broadcast_active_users():
     with data_lock:
         users_list = list(active_users.values())
 
-    count = len(users_list)
-
-    socketio.emit(
-        'update_real_users',
-        {
-            'users': users_list,
-            'count': count
-        }
-    )
-
-    print(f'المتصلون الآن: {count}')
+    socketio.emit('update_real_users', {
+        'users': users_list,
+        'count': len(users_list)
+    })
 
 
 # =====================================
-# مغادرة الأعضاء
+# User Disconnect
 # =====================================
 
 @socketio.on('disconnect')
@@ -157,21 +212,15 @@ def handle_disconnect():
         user = active_users.pop(request.sid, None)
 
     if user:
-
         broadcast_active_users()
 
-        socketio.emit(
-            'system_notification',
-            {
-                'message': f'🚪 غادر {user["username"]} الجروب'
-            }
-        )
-
-        print(f'غادر العضو: {user["username"]}')
+        socketio.emit('system_notification', {
+            'message': f'🚪 غادر {user["username"]} الجروب'
+        })
 
 
 # =====================================
-# تشغيل السيرفر
+# Run Server
 # =====================================
 
 if __name__ == '__main__':
