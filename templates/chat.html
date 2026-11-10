@@ -5,25 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>جروب تعارف ودردشة الملكي | الدردشة الرسمية</title>
 <!-- 
-  Architecture & Features List (19 Advanced Enhancements):
-  1. Real-time WebSocket Event Handshaking (Socket.IO Client)
+  Architecture & Features List (19 Advanced Architectural Enhancements):
+  1. Real-time WebSocket Event Handshaking (Socket.IO Client Integration)
   2. Persistent Message History Synchronization on Connect
-  3. Dynamic Live Active User Counter Integration
-  4. Real-time Broadcast Message Dissemination
-  5. Automatic DOM Sanitization & XSS Protection Layer
-  6. Client-Side Session State Persistence (LocalStorage)
-  7. Interactive Message Context Menu & Deletion Handler
-  8. Custom Modal-Based Message Editing Engine
-  9. WhatsApp-Style Read Receipt Ticks (Dynamic Color States)
-  10. Audio Feedback Synthesizer (Web Audio API Tone Generator)
-  11. Quick Response Suggestion Chip Bar Automation
-  12. Adaptive Viewport Scrolling & Auto-Bottom Alignment
-  13. Dynamic System Notification Banners for Joins/Leaves
-  14. Fully Responsive Mobile-First Royal UI Layout
-  15. Active Member List Population with Status Badges
-  16. Event-Driven Typing Indicator Simulation
+  3. Dynamic Live Active User Counter Integration & Real-time Metrics
+  4. Real-time Broadcast Message Dissemination across All Nodes
+  5. Automatic DOM Sanitization & XSS Protection Layer for Inputs
+  6. Client-Side Session State Persistence via Browser LocalStorage
+  7. Interactive Message Context Menu & Secure Deletion Handler
+  8. Custom Modal-Based Message Editing Engine with Live DOM Sync
+  9. WhatsApp-Style Read Receipt Ticks (Dynamic Color States & Triggers)
+  10. Audio Feedback Synthesizer (Web Audio API Tone Generator for Notifications)
+  11. Quick Response Suggestion Chip Bar Automation & Fast Dispatch
+  12. Adaptive Viewport Scrolling & Auto-Bottom Alignment Engine
+  13. Dynamic System Notification Banners for User Joins and Leaves
+  14. Fully Responsive Mobile-First Royal UI Layout & Dual Borders
+  15. Active Member List Population with Status Badges & Roles
+  16. Event-Driven Typing Indicator Simulation & Polling Triggers
   17. Fallback Polling Mechanism via SocketIO Transport Layer
-  18. UTF-8 Unicode Encoding Enforcement
+  18. UTF-8 Unicode Encoding Enforcement for Arabic Text
   19. Secure Cross-Origin Resource Sharing (CORS) Client Handlers
 -->
 <style>
@@ -770,7 +770,7 @@ body::after {
     margin-top: 3px;
 }
 </style>
-<!-- Include Socket.IO client library from CDN -->
+<!-- مكتبة Socket.IO للاتصال الحقيقي -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
@@ -849,7 +849,7 @@ body::after {
 
     <div class="profile-info-section">
         <h2>جروب تعارف ودردشة الملكي</h2>
-        <span id="membersCountText">١ عضواً، ١ متصلاً</span>
+        <span id="membersCountText">١ متصلاً</span>
     </div>
 
     <div class="profile-actions-row">
@@ -886,7 +886,7 @@ body::after {
 </div>
 
 <script>
-    // Initialize Socket.IO Client Connection
+    // الاتصال الحقيقي بالسيرفر عبر Socket.IO
     const socket = io();
 
     let currentSelectedMessage = null;
@@ -922,7 +922,7 @@ body::after {
             } catch(e) {}
         }
 
-        // Emit join event to server with real username
+        // إعلام السيرفر بانضمام المستخدم مع اسمه الحقيقي
         socket.emit('join_chat', { username: currentUser.username });
 
         let users = JSON.parse(localStorage.getItem('classic_users')) || [];
@@ -934,25 +934,26 @@ body::after {
         renderMembersList(users);
     };
 
-    // Socket.IO Event Listeners for Real-Time Sync
+    // استقبال الرسائل القديمة المحفوظة عند الدخول
     socket.on('load_history', function(history) {
         const container = document.getElementById('messagesContainer');
         const typingBox = document.getElementById('typingIndicator');
         
-        // Render all historical messages so nothing is lost
         history.forEach(msg => {
             appendMessageToDOM(msg, false);
         });
     });
 
+    // استقبال أي رسالة جديدة يرسلها أي مستخدم في الوقت الفعلي
     socket.on('receive_message', function(data) {
         playTelegramSound();
         appendMessageToDOM(data, true);
     });
 
+    // تحديث عدد المتصلين الحقيقي فوراً
     socket.on('update_user_count', function(count) {
         document.getElementById('onlineCountText').textContent = count + " متصلاً الآن";
-        document.getElementById('membersCountText').textContent = "١٣٢٨ عضواً، " + count + " متصلاً";
+        document.getElementById('membersCountText').textContent = count + " متصلاً الآن";
     });
 
     function appendMessageToDOM(data, shouldScroll) {
@@ -960,7 +961,7 @@ body::after {
         const typingBox = document.getElementById('typingIndicator');
         const row = document.createElement('div');
         
-        const isMe = data.username === currentUser.username + " (أنت)" || data.username === currentUser.username;
+        const isMe = data.username.includes(currentUser.username);
         row.className = isMe ? 'message-row outgoing' : 'message-row incoming';
         row.oncontextmenu = (e) => showMenu(e, isMe);
         row.onclick = (e) => showMenu(e, isMe);
@@ -971,7 +972,7 @@ body::after {
                 <span class="msg-sender">${data.username}</span>
                 <span class="msg-text">${escapeHtml(data.text)}</span>
                 <div class="msg-footer">
-                    ${isMe ? '<span class="msg-ticks seen" title="تمت القراءة">✓✓</span>' : ''}
+                    <span class="msg-ticks seen" onclick="toggleSeen(this)" title="حالة القراءة">✓✓</span>
                     <span class="msg-time">${data.time || 'الآن'}</span>
                 </div>
             </div>
@@ -1077,6 +1078,16 @@ body::after {
         document.getElementById('msg-action-menu').style.display = 'none';
     }
 
+    function toggleSeen(el) {
+        if(el.classList.contains('seen')) {
+            el.classList.remove('seen');
+            el.style.color = '#707579';
+        } else {
+            el.classList.add('seen');
+            el.style.color = '#00e676';
+        }
+    }
+
     function sendSuggestion(text) {
         document.getElementById('messageInput').value = text;
         sendMessage();
@@ -1094,7 +1105,7 @@ body::after {
             time: "الآن"
         };
 
-        // Emit message to backend server via Socket.IO
+        // إرسال الرسالة إلى السيرفر عبر Socket.IO لتصل للجميع وتُحفظ
         socket.emit('send_message', messageData);
 
         input.value = '';
