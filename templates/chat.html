@@ -986,6 +986,37 @@ body::after {
         container.scrollTop = container.scrollHeight;
     });
 
+    // Receive Edited Message
+    socket.on('message_edited', function(msg) {
+        const row = document.querySelector(`[data-message-id="${msg.id}"]`);
+        if (row) {
+            const text = row.querySelector('.msg-text');
+            if (text) {
+                text.textContent = msg.message;
+            }
+        }
+    });
+
+    // Receive Deleted Message
+    socket.on('message_deleted', function(data) {
+        const row = document.querySelector(`[data-message-id="${data.id}"]`);
+        if (row) {
+            row.remove();
+        }
+    });
+
+    // Receive Read Status
+    socket.on('message_read', function(data) {
+        const row = document.querySelector(`[data-message-id="${data.id}"]`);
+        if (row) {
+            const ticks = row.querySelector('.msg-ticks');
+            if (ticks) {
+                ticks.classList.add('seen');
+                ticks.textContent = '✓✓';
+            }
+        }
+    });
+
     function appendMessageToDOM(msg, playSound) {
         if(playSound) playTelegramSound();
         const container = document.getElementById('messagesContainer');
@@ -1054,17 +1085,34 @@ body::after {
     }
 
     function saveEditedMessage() {
-        if(!currentSelectedMessage) return;
+        if (!currentSelectedMessage) return;
+
         const newText = document.getElementById('editModalInput').value.trim();
-        if(newText !== "") {
-            currentSelectedMessage.querySelector('.msg-text').textContent = newText;
-        }
+        const messageId = currentSelectedMessage.dataset.messageId;
+
+        if (!newText || !messageId) return;
+
+        socket.emit('edit_message', {
+            id: messageId,
+            message: newText
+        });
+
         closeEditModal();
     }
 
     function deleteMessage() {
-        if(!currentSelectedMessage) return;
-        currentSelectedMessage.remove();
+        if (!currentSelectedMessage) return;
+
+        const messageId = currentSelectedMessage.dataset.messageId;
+
+        if (!messageId) return;
+
+        socket.emit('delete_message', {
+            id: messageId
+        });
+
+        currentSelectedMessage = null;
+
         document.getElementById('msg-action-menu').style.display = 'none';
     }
 
