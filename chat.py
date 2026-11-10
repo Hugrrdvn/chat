@@ -8,7 +8,7 @@ app.config['SECRET_KEY'] = 'my-secret-key'
 # تهيئة السيرفر مع السماح بالاتصالات الخارجية
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# مسار الصفحة الرئيسية (تأكد أن اسم ملف الـ HTML لديك مطابق، مثل chat.html أو index.html)
+# مسار الصفحة الرئيسية (تأكد أن اسم ملف الـ HTML لديك مطابق، مثل chat.html)
 @app.route('/')
 def index():
     return send_from_directory('.', 'chat.html')
