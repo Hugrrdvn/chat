@@ -1,4 +1,4 @@
-Flask==3.0.2
-Flask-SocketIO==5.3.6
-gunicorn==21.2.0
-simple-websocket==0.10.0
+Flask
+Flask-SocketIO
+simple-websocket
+gunicorn
