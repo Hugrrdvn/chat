@@ -20,12 +20,14 @@ body::before {
 .header-wrapper { width: 90%; max-width: 390px; flex-shrink: 0; display: flex; flex-direction: column; position: relative; z-index: 10; margin-top: 10px; }
 .telegram-header-box {
     width: 100%; background: rgba(12, 12, 12, 0.94); backdrop-filter: blur(12px); color: #ffffff;
-    display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-radius: 22px; 
+    display: flex; align-items: center; justify-content: flex-start; gap: 12px; padding: 10px 16px; border-radius: 22px; 
     border: 1.5px solid #d4af37; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.3);
 }
-.th-right { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.th-right { display: flex; align-items: center; flex-shrink: 0; cursor: pointer; }
 .th-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; }
-.th-info h3 { font-size: 16.5px; font-weight: 900; color: #ffd700; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+.th-info { display: flex; flex-direction: column; text-align: right; flex: 1; min-width: 0; }
+.th-info h3 { font-size: 16px; font-weight: 900; color: #ffd700; text-shadow: 0 1px 4px rgba(0,0,0,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 .external-active-badge {
     align-self: flex-start; background-color: rgba(12, 12, 12, 0.85); border: 1.2px solid #d4af37;
     color: #ffd700; font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 12px; margin-top: 6px; display: inline-flex; align-items: center; gap: 6px;
@@ -96,20 +98,39 @@ body::before {
         Notification.requestPermission();
     }
 
+    // نغمة تنبيه واضحة وعالية الصوت (SafeUM / Telegram Style محسن)
     function playTelegramSound() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(850, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(450, audioCtx.currentTime + 0.08);
-            gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.08);
+            
+            // نغمة أولى
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(950, audioCtx.currentTime);
+            osc1.frequency.exponentialRampToValueAtTime(650, audioCtx.currentTime + 0.12);
+            gain1.gain.setValueAtTime(0.35, audioCtx.currentTime); // صوت عالي وواضح
+            gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+            osc1.connect(gain1);
+            gain1.connect(audioCtx.destination);
+            osc1.start();
+            osc1.stop(audioCtx.currentTime + 0.12);
+
+            // نغمة ثانية متتابعة
+            setTimeout(() => {
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                osc2.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.15);
+                gain2.gain.setValueAtTime(0.35, audioCtx.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc2.connect(gain2);
+                gain2.connect(audioCtx.destination);
+                osc2.start();
+                osc2.stop(audioCtx.currentTime + 0.15);
+            }, 100);
+
         } catch(e) {}
     }
 
