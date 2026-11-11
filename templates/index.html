@@ -281,7 +281,6 @@ body::after {
     color: #707579;
 }
 
-/* علامات الصح الحقيقية */
 .msg-ticks {
     font-size: 11px;
     font-weight: 900;
@@ -308,47 +307,6 @@ body::after {
     margin: 6px 0;
     text-align: center;
     box-shadow: 0 3px 10px rgba(0,0,0,0.6), 0 0 12px rgba(212, 175, 55, 0.25);
-}
-
-/* مؤشر الكتابة */
-.typing-indicator-box {
-    align-self: flex-start;
-    display: none;
-    align-items: center;
-    gap: 8px;
-    background: rgba(12, 12, 12, 0.92);
-    border: 1.2px solid #d4af37;
-    padding: 6px 12px;
-    border-radius: 16px;
-    color: #ffd700;
-    font-size: 11px;
-    font-weight: bold;
-    margin-top: 4px;
-    margin-bottom: 6px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.7), 0 0 10px rgba(212, 175, 55, 0.3);
-}
-
-.typing-dots {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-}
-
-.typing-dots span {
-    width: 4.5px;
-    height: 4.5px;
-    background-color: #ffd700;
-    border-radius: 50%;
-    display: inline-block;
-    animation: typingBounce 1.4s infinite ease-in-out both;
-}
-
-.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes typingBounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1.2); }
 }
 
 /* شريط اقتراحات الرسائل السريعة الفخم */
@@ -693,16 +651,9 @@ body::after {
 
 <div class="chat-divider"></div>
 
-<!-- منطقة الرسائل المرتبطة بقاعدة البيانات -->
+<!-- منطقة الرسائل -->
 <div class="chat-messages-container" id="messagesContainer">
     <div class="system-msg">⭐ أهلاً بكم في جروب تعارف ودردشة الملكي الفاخر ⭐</div>
-    
-    <div class="typing-indicator-box" id="typingIndicator">
-        <span>جاري جلب الرسائل الملكية...</span>
-        <div class="typing-dots">
-            <span></span><span></span><span></span>
-        </div>
-    </div>
 </div>
 
 <!-- شريط اقتراحات الرسائل السريعة الفخم -->
@@ -787,10 +738,16 @@ body::after {
 </div>
 
 <script>
-    // توليد اسم ملكي فريد لكل زائر
     const username = "عضو ملكي 🌟 (" + Math.floor(Math.random() * 900 + 100) + ")";
     let currentSelectedMessage = null;
+    let lastMessageCount = 0;
 
+    // طلب إذن الإشعارات من المتصفح عند الدخول
+    if (window.Notification && Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+
+    // تشغيل نغمة تيليجرام حقيقية
     function playTelegramSound() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -808,7 +765,18 @@ body::after {
         } catch(e) {}
     }
 
-    // جلب وحفظ أعداد الأعضاء الحقيقيين والمتصلين من قاعدة البيانات
+    // إرسال إشعار منبثق فخم (Notification) خارج المتصفح
+    function showRoyalNotification(sender, text) {
+        if (window.Notification && Notification.permission === "granted") {
+            try {
+                new Notification("👑 رسالة جديدة في الجروب الملكي", {
+                    body: `${sender}: ${text}`,
+                    icon: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=900"
+                });
+            } catch (e) {}
+        }
+    }
+
     async function updateStatsAndMembers() {
         try {
             await fetch('/members', {
@@ -822,12 +790,9 @@ body::after {
             
             document.getElementById('onlineCountText').textContent = data.online_count + " متصلاً الآن";
             document.getElementById('membersCountText').textContent = data.total_members + " عضواً، " + data.online_count + " متصلاً";
-        } catch (e) {
-            console.error("خطأ في تحديث الأعضاء", e);
-        }
+        } catch (e) {}
     }
 
-    // جلب الرسائل المحفوظة للأبد
     async function fetchMessages() {
         try {
             const response = await fetch('/messages');
@@ -835,6 +800,16 @@ body::after {
             const container = document.getElementById('messagesContainer');
             
             const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
+
+            // إذا وصلت رسالة جديدة وهناك زيادة في العدد، شغل النغمة ونبه العضو خارج المتصفح
+            if (lastMessageCount > 0 && messages.length > lastMessageCount) {
+                playTelegramSound();
+                const latestMsg = messages[messages.length - 1];
+                if (latestMsg.username !== username) {
+                    showRoyalNotification(latestMsg.username, latestMsg.text);
+                }
+            }
+            lastMessageCount = messages.length;
 
             container.innerHTML = '<div class="system-msg">⭐ أهلاً بكم في جروب تعارف ودردشة الملكي الفاخر ⭐</div>';
 
@@ -864,9 +839,7 @@ body::after {
             if (isAtBottom || messages.length <= 5) {
                 container.scrollTop = container.scrollHeight;
             }
-        } catch (e) {
-            console.error("خطأ في جلب الرسائل", e);
-        }
+        } catch (e) {}
     }
 
     async function sendMessage() {
@@ -884,9 +857,7 @@ body::after {
             });
             input.value = '';
             fetchMessages();
-        } catch (e) {
-            console.error("خطأ في إرسال الرسالة", e);
-        }
+        } catch (e) {}
     }
 
     function sendSuggestion(text) {
@@ -959,15 +930,6 @@ body::after {
         }
     });
 
-    // تحديث الرسائل والأعضاء المتصلين تلقائياً كل 3 ثوانٍ
     setInterval(() => {
         fetchMessages();
         updateStatsAndMembers();
-    }, 3000);
-
-    fetchMessages();
-    updateStatsAndMembers();
-</script>
-
-</body>
-</html>
