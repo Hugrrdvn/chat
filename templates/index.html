@@ -787,7 +787,7 @@ body::after {
 </div>
 
 <script>
-    // توليد اسم ملكي فريد للزائر أو العضو
+    // توليد اسم ملكي فريد لكل زائر
     const username = "عضو ملكي 🌟 (" + Math.floor(Math.random() * 900 + 100) + ")";
     let currentSelectedMessage = null;
 
@@ -808,7 +808,26 @@ body::after {
         } catch(e) {}
     }
 
-    // جلب الرسائل الحقيقية من قاعدة بيانات Flask وعرضها بتصميم تيليجرام
+    // جلب وحفظ أعداد الأعضاء الحقيقيين والمتصلين من قاعدة البيانات
+    async function updateStatsAndMembers() {
+        try {
+            await fetch('/members', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username })
+            });
+
+            const res = await fetch('/members');
+            const data = await res.json();
+            
+            document.getElementById('onlineCountText').textContent = data.online_count + " متصلاً الآن";
+            document.getElementById('membersCountText').textContent = data.total_members + " عضواً، " + data.online_count + " متصلاً";
+        } catch (e) {
+            console.error("خطأ في تحديث الأعضاء", e);
+        }
+    }
+
+    // جلب الرسائل المحفوظة للأبد
     async function fetchMessages() {
         try {
             const response = await fetch('/messages');
@@ -817,12 +836,11 @@ body::after {
             
             const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
 
-            // الحفاظ على رسالة الترحيب النظامية
             container.innerHTML = '<div class="system-msg">⭐ أهلاً بكم في جروب تعارف ودردشة الملكي الفاخر ⭐</div>';
 
             messages.forEach(msg => {
                 const row = document.createElement('div');
-                const isMe = msg.username.includes(username.split(" ")[0]) || msg.username === username;
+                const isMe = msg.username === username;
                 
                 row.className = isMe ? 'message-row outgoing' : 'message-row incoming';
                 row.oncontextmenu = (e) => showMenu(e, isMe);
@@ -941,9 +959,14 @@ body::after {
         }
     });
 
-    // تحديث الرسائل تلقائياً كل 3 ثوانٍ
-    setInterval(fetchMessages, 3000);
+    // تحديث الرسائل والأعضاء المتصلين تلقائياً كل 3 ثوانٍ
+    setInterval(() => {
+        fetchMessages();
+        updateStatsAndMembers();
+    }, 3000);
+
     fetchMessages();
+    updateStatsAndMembers();
 </script>
 
 </body>
