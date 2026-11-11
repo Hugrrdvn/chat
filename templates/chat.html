@@ -13,7 +13,7 @@ body {
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 6px 0 10px 0; position: relative;
 }
 
-/* إطار ملكي مزدوج خارجي فخم جداً */
+/* إطار ملكي مزدوج خارجي فخم جداً مع إضاءة محيطية */
 body::before {
     content: ''; position: fixed; top: 4px; bottom: 4px; left: 4px; right: 4px;
     border: 2px solid #d4af37; pointer-events: none; z-index: 100;
@@ -35,14 +35,6 @@ body::before {
 .th-left-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .header-icon-btn { background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); color: #ffd700; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; }
 
-/* شريط الرسالة المثبتة (ميزة ملكية جديدة) */
-.pinned-banner {
-    width: 92%; max-width: 380px; background: rgba(20, 20, 20, 0.9); border: 1px solid #d4af37;
-    border-radius: 10px; padding: 5px 10px; margin-top: 4px; display: flex; align-items: center; justify-content: space-between;
-    z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-}
-.pinned-text { font-size: 10.5px; color: #ffd700; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
 /* شارة النشيطين */
 .external-active-badge {
     align-self: flex-start; background-color: rgba(12, 12, 12, 0.85); border: 1px solid #d4af37;
@@ -59,8 +51,8 @@ body::before {
 .chat-messages-container::-webkit-scrollbar { width: 3px; }
 .chat-messages-container::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
 
-/* هيكل الرسائل المطور (الوقت في اليمين تماماً وثابت) */
-.message-row { display: flex; align-items: flex-end; gap: 6px; max-width: 85%; cursor: pointer; transition: transform 0.2s; }
+/* هيكل الرسائل المطور والفخم */
+.message-row { display: flex; align-items: flex-end; gap: 6px; max-width: 85%; cursor: pointer; }
 .message-row.incoming { align-self: flex-start; }
 .message-row.incoming .message-bubble { background: rgba(255, 255, 255, 0.97); border: 1px solid #d4af37; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
 .message-row.outgoing { align-self: flex-end; flex-direction: row-reverse; }
@@ -73,16 +65,16 @@ body::before {
 .message-row.incoming .msg-sender { color: #1a5c32; }
 .msg-text { font-size: 13px; font-weight: 600; color: #000; line-height: 1.3; margin-bottom: 2px; }
 
-/* تذييل الرسالة (الوقت يمين بدون أصفار بادئة) */
+/* تذييل الرسالة (الوقت يمين، وعلامات الصح) */
 .msg-footer { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 1px; }
 .msg-time { font-size: 8.5px; color: #888; font-weight: bold; }
 .message-row.outgoing .msg-time { color: #aaa; }
-.msg-edited { font-size: 7.5px; color: #d4af37; font-style: italic; }
 .msg-ticks { font-size: 10px; font-weight: 900; color: #00e676; text-shadow: 0 0 4px rgba(0,230,118,0.5); }
 
 .system-msg {
     align-self: center; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.5);
     color: #ffd700; font-size: 10px; font-weight: bold; padding: 3px 12px; border-radius: 15px; margin: 3px 0; text-align: center;
+    box-shadow: 0 0 10px rgba(212,175,55,0.2);
 }
 
 /* شريط الاقتراحات السريعة */
@@ -96,6 +88,7 @@ body::before {
     font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 12px; white-space: nowrap; cursor: pointer;
     box-shadow: 0 2px 5px rgba(0,0,0,0.5); transition: 0.2s;
 }
+.suggestion-chip:active { background: #d4af37; color: #000; }
 
 /* شريط إدخال الرسائل */
 .chat-input-bar {
@@ -126,6 +119,7 @@ body::before {
 .edit-modal-box {
     width: 85%; max-width: 320px; background: rgba(14, 14, 14, 0.96); border: 2px solid #d4af37;
     border-radius: 20px; padding: 18px 14px; display: flex; flex-direction: column; gap: 10px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.9);
 }
 .edit-modal-input { width: 100%; background: #fff; color: #000; border: 2px solid #d4af37; border-radius: 10px; padding: 8px 10px; font-size: 13px; outline: none; }
 .edit-modal-buttons { display: flex; gap: 8px; }
@@ -133,7 +127,7 @@ body::before {
 .edit-btn-action.cancel { background: rgba(255,255,255,0.1); color: #ccc; }
 .edit-btn-action.save { background: #d4af37; color: #000; }
 
-/* قائمة الخيارات للرسائل (تعديل، حذف، نسخ) عند الضغط المطول */
+/* قائمة الخيارات للرسائل (تعديل، حذف، ونسخ) */
 #msg-action-menu {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center;
@@ -156,11 +150,8 @@ body::before {
             </div>
         </div>
         <div class="th-left-actions">
-            <button class="header-icon-btn" onclick="openProfileModal()" title="معلومات الجروب">👑</button>
+            <button class="header-icon-btn" onclick="openProfileModal()" title="بحث أو معلومات">🔍</button>
         </div>
-    </div>
-    <div class="pinned-banner">
-        <span class="pinned-text">📌 رسالة مثبتة: أهلاً بكم في الديوانية الملكية الرسمية 🌟</span>
     </div>
     <div class="external-active-badge">
         <span class="pulse-dot"></span> <span id="onlineCountText">متصلاً الآن</span>
@@ -171,11 +162,13 @@ body::before {
     <div class="system-msg">⭐ أهلاً بك في جروب تعارف ودردشة الملكي الفاخر ⭐</div>
 </div>
 
+<!-- اقتراحات رسائل سريعة مطورة -->
 <div class="quick-suggestions-bar">
     <div class="suggestion-chip" onclick="sendSuggestion('السلام عليكم يا أساطير 👑')">👑 وعليكم السلام</div>
     <div class="suggestion-chip" onclick="sendSuggestion('مساكم الله بالخير والسرور 🌹')">🌹 مساكم الله بالخير</div>
     <div class="suggestion-chip" onclick="sendSuggestion('منورين الديوانية الملكية ✨')">✨ منورين الديوانية</div>
     <div class="suggestion-chip" onclick="sendSuggestion('سهرة ممتعة وصحبة طيبة ☕')">☕ سهرة ممتعة</div>
+    <div class="suggestion-chip" onclick="sendSuggestion('تبارك الرحمن تصميم خرافي 🔥')">🔥 إبداع خارق</div>
 </div>
 
 <div class="chat-input-bar">
@@ -211,7 +204,7 @@ body::before {
     </div>
 </div>
 
-<!-- قائمة الخيارات العائمة (تعديل، حذف، نسخ) بالضغط المطول -->
+<!-- قائمة الخيارات العائمة (تعديل، حذف، نسخ) -->
 <div id="msg-action-menu" onclick="hideMenu(event)">
     <div class="telegram-action-bubble">
         <button class="action-icon-btn" onclick="openEditModal()">✏️ تعديل</button>
@@ -223,7 +216,7 @@ body::before {
 <script>
     let activeUser = JSON.parse(localStorage.getItem('current_active_user'));
     if (!activeUser) {
-        window.location.href = '/'; // إذا لم يكن مسجلاً يعيده لصفحة التسجيل، وإذا كان مسجلاً يدخل الشات فوراً دون إعادة تسجيل
+        window.location.href = '/';
     }
 
     const username = activeUser.username;
@@ -287,12 +280,6 @@ body::before {
         } catch (e) {}
     }
 
-    // دالة لاستخراج الوقت بدون أصفار بادئة (مثل 5:8 بدلاً من 05:08)
-    function getCleanTime() {
-        const now = new Date();
-        return now.getHours() + ":" + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
-    }
-
     async function fetchMessages() {
         try {
             const response = await fetch('/messages');
@@ -317,35 +304,18 @@ body::before {
                 const isMe = msg.username === username;
                 row.className = isMe ? 'message-row outgoing' : 'message-row incoming';
 
-                // ميزة الضغط المطول (Long Press) لتعديل أو حذف الرسالة الخاصة بك
                 if (isMe) {
-                    let pressTimer;
-                    row.addEventListener('touchstart', () => {
-                        pressTimer = setTimeout(() => {
-                            currentSelectedElement = row;
-                            currentSelectedText = msg.text;
-                            document.getElementById('editModalInput').value = msg.text;
-                            document.getElementById('msg-action-menu').style.display = 'flex';
-                        }, 600); // 600 ملي ثانية ضغط مطول
-                    });
-                    row.addEventListener('touchend', () => clearTimeout(pressTimer));
-                    row.addEventListener('mousedown', () => {
-                        pressTimer = setTimeout(() => {
-                            currentSelectedElement = row;
-                            currentSelectedText = msg.text;
-                            document.getElementById('editModalInput').value = msg.text;
-                            document.getElementById('msg-action-menu').style.display = 'flex';
-                        }, 600);
-                    });
-                    row.addEventListener('mouseup', () => clearTimeout(pressTimer));
+                    row.onclick = (e) => {
+                        e.stopPropagation();
+                        currentSelectedElement = row;
+                        currentSelectedText = msg.text;
+                        document.getElementById('editModalInput').value = msg.text;
+                        document.getElementById('msg-action-menu').style.display = 'flex';
+                    };
                 }
 
                 let avatarUrl = isMe ? userAvatar : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900';
-                
-                // استخدام وقت ثابت لكل رسالة أو وقت السيرفر المحلي لضمان عدم تغيره عند نزول رسائل جديدة
-                if (!msg.fixedTime) {
-                    msg.fixedTime = getCleanTime();
-                }
+                const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 row.innerHTML = `
                     <img class="msg-avatar" src="${avatarUrl}" alt="صورة">
@@ -353,9 +323,8 @@ body::before {
                         <span class="msg-sender">${msg.username} 👑</span>
                         <span class="msg-text">${msg.text}</span>
                         <div class="msg-footer">
-                            ${msg.isEdited ? '<span class="msg-edited">(معدلة ✏️)</span>' : ''}
                             ${isMe ? '<span class="msg-ticks">✓✓</span>' : ''}
-                            <span class="msg-time">${msg.fixedTime}</span>
+                            <span class="msg-time">${timeStr}</span>
                         </div>
                     </div>
                 `;
@@ -418,14 +387,6 @@ body::before {
         if (!newText) return;
         if (currentSelectedElement) {
             currentSelectedElement.querySelector('.msg-text').textContent = newText;
-            // إضافة علامة التعديل
-            let footer = currentSelectedElement.querySelector('.msg-footer');
-            if (!footer.querySelector('.msg-edited')) {
-                let editSpan = document.createElement('span');
-                editSpan.className = 'msg-edited';
-                editSpan.textContent = '(معدلة ✏️)';
-                footer.insertBefore(editSpan, footer.firstChild);
-            }
         }
         closeEditModal();
     }
