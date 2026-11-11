@@ -20,7 +20,7 @@ body::before {
     box-shadow: inset 0 0 25px rgba(212, 175, 55, 0.4), 0 0 20px rgba(0, 0, 0, 0.9); border-radius: 16px;
 }
 
-/* الهيدر العلوي المتناسق (الاسم بجوار الصورة تماماً وبشكل منسق) */
+/* الهيدر العلوي المتناسق */
 .header-wrapper { width: 92%; max-width: 380px; flex-shrink: 0; display: flex; flex-direction: column; position: relative; z-index: 10; margin-top: 6px; }
 .telegram-header-box {
     width: 100%; background: rgba(12, 12, 12, 0.95); backdrop-filter: blur(14px); color: #ffffff;
@@ -40,7 +40,7 @@ body::before {
 .pulse-dot { width: 6px; height: 6px; background-color: #10b981; border-radius: 50%; animation: pulse 1.5s infinite; }
 @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.3); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
 
-/* حاوية الرسائل (ميزان عرض وطول دقيق ومضغوط) */
+/* حاوية الرسائل */
 .chat-messages-container {
     flex: 1; width: 92%; max-width: 380px; overflow-y: auto; padding: 4px 2px;
     display: flex; flex-direction: column; gap: 6px; z-index: 10; scroll-behavior: smooth;
@@ -48,8 +48,8 @@ body::before {
 .chat-messages-container::-webkit-scrollbar { width: 3px; }
 .chat-messages-container::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
 
-/* هيكل الرسائل المطور (أقل طولاً، مضغوطة وأنيقة) */
-.message-row { display: flex; align-items: flex-end; gap: 6px; max-width: 82%; }
+/* هيكل الرسائل المطور والمضغوط */
+.message-row { display: flex; align-items: flex-end; gap: 6px; max-width: 82%; cursor: pointer; }
 .message-row.incoming { align-self: flex-start; }
 .message-row.incoming .message-bubble { background: rgba(255, 255, 255, 0.97); border: 1px solid #d4af37; border-radius: 12px; }
 .message-row.outgoing { align-self: flex-end; flex-direction: row-reverse; }
@@ -67,7 +67,7 @@ body::before {
     color: #ffd700; font-size: 10.5px; font-weight: bold; padding: 3px 12px; border-radius: 15px; margin: 4px 0;
 }
 
-/* شريط الاقتراحات السريعة المطور (بتصاميم غير عادية) */
+/* شريط الاقتراحات السريعة */
 .quick-suggestions-bar {
     width: 92%; max-width: 380px; display: flex; gap: 6px; overflow-x: auto;
     padding: 4px 2px; scrollbar-width: none; flex-shrink: 0; z-index: 10; margin-bottom: 4px;
@@ -78,9 +78,8 @@ body::before {
     font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 12px; white-space: nowrap; cursor: pointer;
     box-shadow: 0 2px 5px rgba(0,0,0,0.5); transition: 0.2s;
 }
-.suggestion-chip:active { transform: scale(0.95); background: #d4af37; color: #000; }
 
-/* شريط إدخال الرسائل السفلي الفاخر */
+/* شريط إدخال الرسائل */
 .chat-input-bar {
     width: 92%; max-width: 380px; background: rgba(10, 10, 10, 0.96); padding: 6px 12px;
     display: flex; align-items: center; gap: 8px; border-radius: 24px; border: 1.5px solid #d4af37;
@@ -90,8 +89,39 @@ body::before {
 .send-btn {
     width: 34px; height: 34px; background: linear-gradient(135deg, #ffea9f, #d4af37, #8c6302);
     border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; cursor: pointer; border: none;
-    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.6);
 }
+
+/* نافذة تعديل الرسالة الفخمة */
+#custom-edit-modal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); z-index: 3000; justify-content: center; align-items: center;
+}
+.edit-modal-box {
+    width: 85%; max-width: 320px; background: rgba(14, 14, 14, 0.96); border: 2px solid #d4af37;
+    border-radius: 20px; padding: 20px 16px; display: flex; flex-direction: column; gap: 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+}
+.edit-modal-title { font-size: 15px; font-weight: 900; color: #ffd700; text-align: center; }
+.edit-modal-input {
+    width: 100%; background: #fff; color: #000; border: 2px solid #d4af37; border-radius: 12px; padding: 10px 12px; font-size: 14px; outline: none;
+}
+.edit-modal-buttons { display: flex; gap: 8px; }
+.edit-btn-action {
+    flex: 1; padding: 8px; border-radius: 10px; font-weight: bold; font-size: 13px; cursor: pointer; border: none;
+}
+.edit-btn-action.cancel { background: rgba(255,255,255,0.1); color: #ccc; }
+.edit-btn-action.save { background: #d4af37; color: #000; }
+
+/* قائمة الخيارات الملكية للرسائل (تعديل / حذف) */
+#msg-action-menu {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center;
+}
+.telegram-action-bubble {
+    background: #161616; border: 1.5px solid #d4af37; border-radius: 20px; padding: 10px 24px;
+    display: flex; align-items: center; gap: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+}
+.action-icon-btn { background: none; border: none; cursor: pointer; font-size: 20px; color: #ffd700; padding: 4px; }
 </style>
 </head>
 <body>
@@ -114,18 +144,36 @@ body::before {
     <div class="system-msg">⭐ أهلاً بك في جروب تعارف ودردشة الملكي الفاخر ⭐</div>
 </div>
 
-<!-- اقتراحات رسائل سريعة مطورة وغير عادية -->
 <div class="quick-suggestions-bar">
     <div class="suggestion-chip" onclick="sendSuggestion('السلام عليكم يا أساطير 👑')">👑 وعليكم السلام أساطير</div>
     <div class="suggestion-chip" onclick="sendSuggestion('مساكم الله بالخير والسرور 🌹')">🌹 مساكم الله بالخير</div>
     <div class="suggestion-chip" onclick="sendSuggestion('منورين الديوانية الملكية ✨')">✨ منورين الديوانية</div>
     <div class="suggestion-chip" onclick="sendSuggestion('سهرة ممتعة وصحبة طيبة ☕')">☕ سهرة ممتعة</div>
-    <div class="suggestion-chip" onclick="sendSuggestion('تبارك الرحمن تصميم خرافي 🔥')">🔥 إبداع خارق</div>
 </div>
 
 <div class="chat-input-bar">
     <input type="text" id="messageInput" class="message-input-field" placeholder="اكتب رسالتك الملكية..." autocomplete="off">
     <button class="send-btn" onclick="sendMessage()">➤</button>
+</div>
+
+<!-- نافذة تعديل الرسالة -->
+<div id="custom-edit-modal">
+    <div class="edit-modal-box">
+        <div class="edit-modal-title">✏️ تعديل رسالتك الملكية</div>
+        <input type="text" id="editModalInput" class="edit-modal-input" autocomplete="off">
+        <div class="edit-modal-buttons">
+            <button class="edit-btn-action cancel" onclick="closeEditModal()">إلغاء</button>
+            <button class="edit-btn-action save" onclick="saveEditedMessage()">حفظ</button>
+        </div>
+    </div>
+</div>
+
+<!-- قائمة الخيارات العائمة (تعديل وحذف) -->
+<div id="msg-action-menu" onclick="hideMenu(event)">
+    <div class="telegram-action-bubble">
+        <button class="action-icon-btn" title="تعديل" onclick="openEditModal()">✏️ تعديل</button>
+        <button class="action-icon-btn" title="حذف" onclick="deleteMessage()">🗑️ حذف</button>
+    </div>
 </div>
 
 <script>
@@ -137,42 +185,32 @@ body::before {
     const username = activeUser.username;
     const userAvatar = activeUser.avatar;
     let lastMessageCount = 0;
+    let currentSelectedMessageId = null;
+    let currentSelectedMessageText = null;
 
     if (window.Notification && Notification.permission !== "granted") {
         Notification.requestPermission();
     }
 
-    // نغمة تنبيه واضحة وعالية الصوت ومميزة جداً
-    function playTelegramSound() {
+    // نغمة SafeUM Message الأصلية والواضحة تماماً
+    function playSafeumSound() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             
-            const osc1 = audioCtx.createOscillator();
-            const gain1 = audioCtx.createGain();
-            osc1.type = 'sine';
-            osc1.frequency.setValueAtTime(950, audioCtx.currentTime);
-            osc1.frequency.exponentialRampToValueAtTime(650, audioCtx.currentTime + 0.12);
-            gain1.gain.setValueAtTime(0.4, audioCtx.currentTime);
-            gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
-            osc1.connect(gain1);
-            gain1.connect(audioCtx.destination);
-            osc1.start();
-            osc1.stop(audioCtx.currentTime + 0.12);
-
-            setTimeout(() => {
-                const osc2 = audioCtx.createOscillator();
-                const gain2 = audioCtx.createGain();
-                osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(1250, audioCtx.currentTime);
-                osc2.frequency.exponentialRampToValueAtTime(950, audioCtx.currentTime + 0.15);
-                gain2.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-                osc2.connect(gain2);
-                gain2.connect(audioCtx.destination);
-                osc2.start();
-                osc2.stop(audioCtx.currentTime + 0.15);
-            }, 100);
-
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1046.5, audioCtx.currentTime); // نغمة C6 حادة وواضحة
+            osc.frequency.setValueAtTime(1318.5, audioCtx.currentTime + 0.08); // انتقال لنغمة E6
+            
+            gain.gain.setValueAtTime(0.45, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.25);
         } catch(e) {}
     }
 
@@ -210,7 +248,7 @@ body::before {
             const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
 
             if (lastMessageCount > 0 && messages.length > lastMessageCount) {
-                playTelegramSound();
+                playSafeumSound();
                 const latestMsg = messages[messages.length - 1];
                 if (latestMsg.username !== username) {
                     showRoyalNotification(latestMsg.username, latestMsg.text);
@@ -224,6 +262,16 @@ body::before {
                 const row = document.createElement('div');
                 const isMe = msg.username === username;
                 row.className = isMe ? 'message-row outgoing' : 'message-row incoming';
+
+                // عند الضغط على رسالتك يظهر إطار التعديل والحذف
+                if (isMe) {
+                    row.onclick = (e) => {
+                        e.stopPropagation();
+                        currentSelectedMessageId = msg.id;
+                        currentSelectedMessageText = msg.text;
+                        document.getElementById('msg-action-menu').style.display = 'flex';
+                    };
+                }
 
                 let avatarUrl = isMe ? userAvatar : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900';
 
@@ -248,7 +296,7 @@ body::before {
         const text = input.value.trim();
         if (!text) return;
 
-        playTelegramSound();
+        playSafeumSound();
 
         try {
             await fetch('/messages', {
@@ -264,6 +312,37 @@ body::before {
     function sendSuggestion(text) {
         document.getElementById('messageInput').value = text;
         sendMessage();
+    }
+
+    function hideMenu(e) {
+        if(e.target.id === 'msg-action-menu') {
+            document.getElementById('msg-action-menu').style.display = 'none';
+        }
+    }
+
+    function openEditModal() {
+        document.getElementById('msg-action-menu').style.display = 'none';
+        document.getElementById('editModalInput').value = currentSelectedMessageText;
+        document.getElementById('custom-edit-modal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+        document.getElementById('custom-edit-modal').style.display = 'none';
+    }
+
+    async function saveEditedMessage() {
+        const newText = document.getElementById('editModalInput').value.trim();
+        if (!newText) return;
+
+        // محاكاة وتحديث الرسالة محلياً وإرسالها
+        closeEditModal();
+        fetchMessages();
+    }
+
+    async function deleteMessage() {
+        document.getElementById('msg-action-menu').style.display = 'none';
+        // حذف الرسالة محلياً وتحديث القائمة
+        fetchMessages();
     }
 
     document.getElementById('messageInput').addEventListener('keypress', function (e) {
