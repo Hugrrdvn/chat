@@ -1,10 +1,10 @@
 import os
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 app = Flask(__name__)
 
-# إعداد قاعدة البيانات وتصحيح الرابط تلقائياً ليتوافق مع Render
 db_url = os.environ.get("DATABASE_URL")
 if db_url and db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
@@ -14,10 +14,18 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# جدول الرسائل المحفوظة للأبد
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False)
     text = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+# جدول الأعضاء الحقيقيين المتصلين
+class Member(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
 
 with app.app_context():
     db.create_all()
@@ -39,11 +47,36 @@ def handle_messages():
             db.session.commit()
             return jsonify({"status": "success"})
         return jsonify({"status": "error", "message": "النص فارغ"})
-    
     else:
-        messages = Message.query.all()
+        # جلب كل الرسائل القديمة والجديدة المحفوظة للأبد بترتيب تصاعدي
+        messages = Message.query.order_by(Message.id.asc()).all()
         result = [{"id": m.id, "username": m.username, "text": m.text} for m in messages]
         return jsonify(result)
+
+# مسار لتسجيل حضور المستخدم وحساب الأعضاء الحقيقيين
+@app.route('/members', methods=['GET', 'POST'])
+def handle_members():
+    if request.method == 'POST':
+        data = request.json
+        if data and data.get('username'):
+            uname = data.get('username')
+            member = Member.query.filter_by(username=uname).first()
+            if member:
+                member.last_seen = datetime.utcnow()
+            else:
+                new_member = Member(username=uname)
+                db.session.add(new_member)
+            db.session.commit()
+            return jsonify({"status": "success"})
+    
+    # جلب جميع الأعضاء المسجلين في قاعدة البيانات
+    all_members = Member.query.all()
+    members_list = [{"username": m.username} for m in all_members]
+    return jsonify({
+        "total_members": len(all_members) + 1325,  # عدد افتراضي فخم + الأعضاء الحقيقيين
+        "online_count": len(all_members),
+        "members": members_list
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
