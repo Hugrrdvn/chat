@@ -10,32 +10,35 @@ html, body { height: 100%; width: 100%; overflow: hidden; user-select: none; }
 body { 
     background-image: url('https://i.ibb.co/fVgM9d4V/1794133679969-2.jpg');
     background-size: cover; background-position: center; background-repeat: no-repeat;
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 8px 0 12px 0; position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 6px 0 10px 0; position: relative;
 }
 
-/* إطار ملكي مزدوج خارجي فخم جداً */
+/* إطار ملكي مزدوج خارجي فخم جداً مع إضاءة محيطية */
 body::before {
-    content: ''; position: fixed; top: 5px; bottom: 5px; left: 5px; right: 5px;
+    content: ''; position: fixed; top: 4px; bottom: 4px; left: 4px; right: 4px;
     border: 2px solid #d4af37; pointer-events: none; z-index: 100;
-    box-shadow: inset 0 0 25px rgba(212, 175, 55, 0.4), 0 0 20px rgba(0, 0, 0, 0.9); border-radius: 16px;
+    box-shadow: inset 0 0 30px rgba(212, 175, 55, 0.45), 0 0 20px rgba(0, 0, 0, 0.95); border-radius: 16px;
 }
 
 /* الهيدر العلوي المتناسق */
-.header-wrapper { width: 92%; max-width: 380px; flex-shrink: 0; display: flex; flex-direction: column; position: relative; z-index: 10; margin-top: 6px; }
+.header-wrapper { width: 92%; max-width: 380px; flex-shrink: 0; display: flex; flex-direction: column; position: relative; z-index: 10; margin-top: 4px; }
 .telegram-header-box {
-    width: 100%; background: rgba(12, 12, 12, 0.95); backdrop-filter: blur(14px); color: #ffffff;
-    display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 8px 14px; border-radius: 18px; 
-    border: 1.5px solid #d4af37; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8), 0 0 12px rgba(212, 175, 55, 0.25);
+    width: 100%; background: rgba(12, 12, 12, 0.96); backdrop-filter: blur(14px); color: #ffffff;
+    display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 18px; 
+    border: 1.5px solid #d4af37; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8), 0 0 12px rgba(212, 175, 55, 0.3);
 }
-.th-right { display: flex; align-items: center; flex-shrink: 0; }
-.th-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; box-shadow: 0 0 8px rgba(212,175,55,0.5); }
-.th-info { display: flex; flex-direction: column; text-align: right; flex: 1; min-width: 0; }
-.th-info h3 { font-size: 15px; font-weight: 900; color: #ffd700; text-shadow: 0 1px 3px rgba(0,0,0,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.th-right { display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1; min-width: 0; }
+.th-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; box-shadow: 0 0 8px rgba(212,175,55,0.6); flex-shrink: 0; }
+.th-info { display: flex; flex-direction: column; text-align: right; min-width: 0; }
+.th-info h3 { font-size: 14.5px; font-weight: 900; color: #ffd700; text-shadow: 0 1px 3px rgba(0,0,0,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* شارة النشيطين بتصميم مطور */
+.th-left-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.header-icon-btn { background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); color: #ffd700; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; }
+
+/* شارة النشيطين */
 .external-active-badge {
     align-self: flex-start; background-color: rgba(12, 12, 12, 0.85); border: 1px solid #d4af37;
-    color: #ffd700; font-size: 10.5px; font-weight: 700; padding: 2px 10px; border-radius: 10px; margin-top: 4px; display: inline-flex; align-items: center; gap: 5px;
+    color: #ffd700; font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 10px; margin-top: 3px; display: inline-flex; align-items: center; gap: 5px;
 }
 .pulse-dot { width: 6px; height: 6px; background-color: #10b981; border-radius: 50%; animation: pulse 1.5s infinite; }
 @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.3); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
@@ -48,91 +51,106 @@ body::before {
 .chat-messages-container::-webkit-scrollbar { width: 3px; }
 .chat-messages-container::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
 
-/* هيكل الرسائل المطور والمضغوط */
-.message-row { display: flex; align-items: flex-end; gap: 6px; max-width: 82%; cursor: pointer; }
+/* هيكل الرسائل المطور والفخم */
+.message-row { display: flex; align-items: flex-end; gap: 6px; max-width: 85%; cursor: pointer; }
 .message-row.incoming { align-self: flex-start; }
-.message-row.incoming .message-bubble { background: rgba(255, 255, 255, 0.97); border: 1px solid #d4af37; border-radius: 12px; }
+.message-row.incoming .message-bubble { background: rgba(255, 255, 255, 0.97); border: 1px solid #d4af37; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
 .message-row.outgoing { align-self: flex-end; flex-direction: row-reverse; }
-.message-row.outgoing .message-bubble { background: linear-gradient(135deg, rgba(15, 30, 15, 0.97), rgba(10, 20, 10, 0.97)); border: 1.2px solid #d4af37; border-radius: 12px; }
+.message-row.outgoing .message-bubble { background: linear-gradient(135deg, rgba(15, 30, 15, 0.97), rgba(10, 20, 10, 0.97)); border: 1.2px solid #d4af37; border-radius: 12px; box-shadow: 0 3px 12px rgba(0,0,0,0.5); }
 .message-row.outgoing .msg-text { color: #ffffff; }
 
-.msg-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; }
-.message-bubble { padding: 5px 10px; display: flex; flex-direction: column; max-width: 240px; word-break: break-word; }
-.msg-sender { font-size: 10.5px; font-weight: 800; color: #ffd700; margin-bottom: 1px; }
+.msg-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; flex-shrink: 0; }
+.message-bubble { padding: 5px 10px 4px 10px; display: flex; flex-direction: column; max-width: 250px; word-break: break-word; position: relative; }
+.msg-sender { font-size: 10.5px; font-weight: 800; color: #ffd700; margin-bottom: 1px; display: flex; align-items: center; gap: 4px; }
 .message-row.incoming .msg-sender { color: #1a5c32; }
-.msg-text { font-size: 13px; font-weight: 600; color: #000; line-height: 1.3; }
+.msg-text { font-size: 13px; font-weight: 600; color: #000; line-height: 1.3; margin-bottom: 2px; }
+
+/* تذييل الرسالة (الوقت يمين، وعلامات الصح) */
+.msg-footer { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 1px; }
+.msg-time { font-size: 8.5px; color: #888; font-weight: bold; }
+.message-row.outgoing .msg-time { color: #aaa; }
+.msg-ticks { font-size: 10px; font-weight: 900; color: #00e676; text-shadow: 0 0 4px rgba(0,230,118,0.5); }
 
 .system-msg {
     align-self: center; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.5);
-    color: #ffd700; font-size: 10.5px; font-weight: bold; padding: 3px 12px; border-radius: 15px; margin: 4px 0;
+    color: #ffd700; font-size: 10px; font-weight: bold; padding: 3px 12px; border-radius: 15px; margin: 3px 0; text-align: center;
+    box-shadow: 0 0 10px rgba(212,175,55,0.2);
 }
 
 /* شريط الاقتراحات السريعة */
 .quick-suggestions-bar {
-    width: 92%; max-width: 380px; display: flex; gap: 6px; overflow-x: auto;
-    padding: 4px 2px; scrollbar-width: none; flex-shrink: 0; z-index: 10; margin-bottom: 4px;
+    width: 92%; max-width: 380px; display: flex; gap: 5px; overflow-x: auto;
+    padding: 3px 2px; scrollbar-width: none; flex-shrink: 0; z-index: 10; margin-bottom: 3px;
 }
 .quick-suggestions-bar::-webkit-scrollbar { display: none; }
 .suggestion-chip {
     background: rgba(15, 15, 15, 0.92); border: 1px solid #d4af37; color: #ffd700;
-    font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 12px; white-space: nowrap; cursor: pointer;
+    font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 12px; white-space: nowrap; cursor: pointer;
     box-shadow: 0 2px 5px rgba(0,0,0,0.5); transition: 0.2s;
 }
+.suggestion-chip:active { background: #d4af37; color: #000; }
 
 /* شريط إدخال الرسائل */
 .chat-input-bar {
-    width: 92%; max-width: 380px; background: rgba(10, 10, 10, 0.96); padding: 6px 12px;
-    display: flex; align-items: center; gap: 8px; border-radius: 24px; border: 1.5px solid #d4af37;
+    width: 92%; max-width: 380px; background: rgba(10, 10, 10, 0.96); padding: 5px 10px;
+    display: flex; align-items: center; gap: 6px; border-radius: 22px; border: 1.5px solid #d4af37;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.35); flex-shrink: 0; z-index: 10;
 }
-.message-input-field { flex: 1; background: none; border: none; color: #fff; font-size: 14px; outline: none; }
+.input-icon-btn { background: none; border: none; font-size: 16px; cursor: pointer; color: #ffd700; padding: 2px; }
+.message-input-field { flex: 1; background: none; border: none; color: #fff; font-size: 13.5px; outline: none; }
 .send-btn {
-    width: 34px; height: 34px; background: linear-gradient(135deg, #ffea9f, #d4af37, #8c6302);
+    width: 32px; height: 32px; background: linear-gradient(135deg, #ffea9f, #d4af37, #8c6302);
     border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; cursor: pointer; border: none;
+    box-shadow: 0 2px 6px rgba(212,175,55,0.5);
 }
 
-/* نافذة تعديل الرسالة الفخمة */
+/* واجهة معلومات الجروب */
+#group-profile-modal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #0b0b0b; color: #fff; z-index: 2000; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto;
+}
+.profile-big-avatar { width: 95px; height: 95px; border-radius: 50%; border: 3px solid #ffd700; object-fit: cover; margin-top: 15px; box-shadow: 0 0 25px rgba(212,175,55,0.7); }
+
+/* نافذة تعديل الرسالة */
 #custom-edit-modal {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); z-index: 3000; justify-content: center; align-items: center;
 }
 .edit-modal-box {
     width: 85%; max-width: 320px; background: rgba(14, 14, 14, 0.96); border: 2px solid #d4af37;
-    border-radius: 20px; padding: 20px 16px; display: flex; flex-direction: column; gap: 12px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+    border-radius: 20px; padding: 18px 14px; display: flex; flex-direction: column; gap: 10px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.9);
 }
-.edit-modal-title { font-size: 15px; font-weight: 900; color: #ffd700; text-align: center; }
-.edit-modal-input {
-    width: 100%; background: #fff; color: #000; border: 2px solid #d4af37; border-radius: 12px; padding: 10px 12px; font-size: 14px; outline: none;
-}
+.edit-modal-input { width: 100%; background: #fff; color: #000; border: 2px solid #d4af37; border-radius: 10px; padding: 8px 10px; font-size: 13px; outline: none; }
 .edit-modal-buttons { display: flex; gap: 8px; }
-.edit-btn-action {
-    flex: 1; padding: 8px; border-radius: 10px; font-weight: bold; font-size: 13px; cursor: pointer; border: none;
-}
+.edit-btn-action { flex: 1; padding: 7px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; border: none; }
 .edit-btn-action.cancel { background: rgba(255,255,255,0.1); color: #ccc; }
 .edit-btn-action.save { background: #d4af37; color: #000; }
 
-/* قائمة الخيارات الملكية للرسائل (تعديل / حذف) */
+/* قائمة الخيارات للرسائل (تعديل، حذف، ونسخ) */
 #msg-action-menu {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center;
 }
 .telegram-action-bubble {
-    background: #161616; border: 1.5px solid #d4af37; border-radius: 20px; padding: 10px 24px;
-    display: flex; align-items: center; gap: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    background: #161616; border: 1.5px solid #d4af37; border-radius: 18px; padding: 10px 18px;
+    display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.9);
 }
-.action-icon-btn { background: none; border: none; cursor: pointer; font-size: 20px; color: #ffd700; padding: 4px; }
+.action-icon-btn { background: none; border: none; cursor: pointer; font-size: 15px; color: #ffd700; font-weight: bold; display: flex; align-items: center; gap: 4px; }
 </style>
 </head>
 <body>
 
 <div class="header-wrapper">
     <div class="telegram-header-box">
-        <div class="th-right">
+        <div class="th-right" onclick="openProfileModal()">
             <img class="th-avatar" id="headerGroupAvatar" src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=900" alt="صورة الجروب">
+            <div class="th-info">
+                <h3 id="headerUsernameDisplay">جروب تعارف ودردشة الملكي</h3>
+            </div>
         </div>
-        <div class="th-info">
-            <h3 id="headerUsernameDisplay">جروب تعارف ودردشة الملكي</h3>
+        <div class="th-left-actions">
+            <button class="header-icon-btn" onclick="openProfileModal()" title="بحث أو معلومات">🔍</button>
         </div>
     </div>
     <div class="external-active-badge">
@@ -144,35 +162,54 @@ body::before {
     <div class="system-msg">⭐ أهلاً بك في جروب تعارف ودردشة الملكي الفاخر ⭐</div>
 </div>
 
+<!-- اقتراحات رسائل سريعة مطورة -->
 <div class="quick-suggestions-bar">
-    <div class="suggestion-chip" onclick="sendSuggestion('السلام عليكم يا أساطير 👑')">👑 وعليكم السلام أساطير</div>
+    <div class="suggestion-chip" onclick="sendSuggestion('السلام عليكم يا أساطير 👑')">👑 وعليكم السلام</div>
     <div class="suggestion-chip" onclick="sendSuggestion('مساكم الله بالخير والسرور 🌹')">🌹 مساكم الله بالخير</div>
     <div class="suggestion-chip" onclick="sendSuggestion('منورين الديوانية الملكية ✨')">✨ منورين الديوانية</div>
     <div class="suggestion-chip" onclick="sendSuggestion('سهرة ممتعة وصحبة طيبة ☕')">☕ سهرة ممتعة</div>
+    <div class="suggestion-chip" onclick="sendSuggestion('تبارك الرحمن تصميم خرافي 🔥')">🔥 إبداع خارق</div>
 </div>
 
 <div class="chat-input-bar">
+    <button class="input-icon-btn" title="إيموجي">😊</button>
     <input type="text" id="messageInput" class="message-input-field" placeholder="اكتب رسالتك الملكية..." autocomplete="off">
+    <button class="input-icon-btn" title="مرفقات">📎</button>
     <button class="send-btn" onclick="sendMessage()">➤</button>
+</div>
+
+<!-- نافذة معلومات الجروب -->
+<div id="group-profile-modal">
+    <div style="width:100%; display:flex; justify-content:flex-start; margin-bottom:10px;">
+        <button onclick="closeProfileModal()" style="background:none; border:none; color:#ffd700; font-size:20px; cursor:pointer;">✕ إغلاق</button>
+    </div>
+    <img class="profile-big-avatar" src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=900" alt="الجروب">
+    <h2 style="color:#ffd700; margin-top:12px; font-size:18px;">جروب تعارف ودردشة الملكي</h2>
+    <p style="color:#aaa; font-size:12px; margin-top:4px;" id="modalMembersSubText">الديوانية الرسمية للأعضاء</p>
+    <div style="width:100%; max-width:320px; background:rgba(20,20,20,0.9); border:1px solid #d4af37; border-radius:14px; padding:12px; margin-top:20px; text-align:center;">
+        <span style="color:#ffd700; font-weight:bold; font-size:13px;">🔗 رابط الدعوة الملكي</span>
+        <div style="color:#fff; font-size:11px; margin-top:4px;">t.me/RoyalChat2026</div>
+    </div>
 </div>
 
 <!-- نافذة تعديل الرسالة -->
 <div id="custom-edit-modal">
     <div class="edit-modal-box">
-        <div class="edit-modal-title">✏️ تعديل رسالتك الملكية</div>
+        <div style="color:#ffd700; font-weight:bold; font-size:14px; text-align:center;">✏️ تعديل رسالتك الملكية</div>
         <input type="text" id="editModalInput" class="edit-modal-input" autocomplete="off">
         <div class="edit-modal-buttons">
             <button class="edit-btn-action cancel" onclick="closeEditModal()">إلغاء</button>
-            <button class="edit-btn-action save" onclick="saveEditedMessage()">حفظ</button>
+            <button class="edit-btn-action save" onclick="saveEditedMessage()">حفظ التعديل</button>
         </div>
     </div>
 </div>
 
-<!-- قائمة الخيارات العائمة (تعديل وحذف) -->
+<!-- قائمة الخيارات العائمة (تعديل، حذف، نسخ) -->
 <div id="msg-action-menu" onclick="hideMenu(event)">
     <div class="telegram-action-bubble">
-        <button class="action-icon-btn" title="تعديل" onclick="openEditModal()">✏️ تعديل</button>
-        <button class="action-icon-btn" title="حذف" onclick="deleteMessage()">🗑️ حذف</button>
+        <button class="action-icon-btn" onclick="openEditModal()">✏️ تعديل</button>
+        <button class="action-icon-btn" onclick="copyMessageText()">📋 نسخ</button>
+        <button class="action-icon-btn" onclick="deleteMessage()">🗑️ حذف</button>
     </div>
 </div>
 
@@ -185,30 +222,26 @@ body::before {
     const username = activeUser.username;
     const userAvatar = activeUser.avatar;
     let lastMessageCount = 0;
-    let currentSelectedMessageId = null;
-    let currentSelectedMessageText = null;
+    let currentSelectedElement = null;
+    let currentSelectedText = "";
 
     if (window.Notification && Notification.permission !== "granted") {
         Notification.requestPermission();
     }
 
-    // نغمة SafeUM Message الأصلية والواضحة تماماً
+    // نغمة SafeUM الأصلية النقية والعالية
     function playSafeumSound() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(1046.5, audioCtx.currentTime); // نغمة C6 حادة وواضحة
-            osc.frequency.setValueAtTime(1318.5, audioCtx.currentTime + 0.08); // انتقال لنغمة E6
-            
+            osc.frequency.setValueAtTime(1046.5, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(1318.5, audioCtx.currentTime + 0.08);
             gain.gain.setValueAtTime(0.45, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-            
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            
             osc.start();
             osc.stop(audioCtx.currentTime + 0.25);
         } catch(e) {}
@@ -225,6 +258,13 @@ body::before {
         }
     }
 
+    function openProfileModal() {
+        document.getElementById('group-profile-modal').style.display = 'flex';
+    }
+    function closeProfileModal() {
+        document.getElementById('group-profile-modal').style.display = 'none';
+    }
+
     async function updateStatsAndMembers() {
         try {
             await fetch('/members', {
@@ -236,6 +276,7 @@ body::before {
             const res = await fetch('/members');
             const data = await res.json();
             document.getElementById('onlineCountText').textContent = data.online_count + " متصلاً الآن";
+            document.getElementById('modalMembersSubText').textContent = data.total_members + " عضواً، " + data.online_count + " متصلاً الآن";
         } catch (e) {}
     }
 
@@ -263,23 +304,28 @@ body::before {
                 const isMe = msg.username === username;
                 row.className = isMe ? 'message-row outgoing' : 'message-row incoming';
 
-                // عند الضغط على رسالتك يظهر إطار التعديل والحذف
                 if (isMe) {
                     row.onclick = (e) => {
                         e.stopPropagation();
-                        currentSelectedMessageId = msg.id;
-                        currentSelectedMessageText = msg.text;
+                        currentSelectedElement = row;
+                        currentSelectedText = msg.text;
+                        document.getElementById('editModalInput').value = msg.text;
                         document.getElementById('msg-action-menu').style.display = 'flex';
                     };
                 }
 
                 let avatarUrl = isMe ? userAvatar : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900';
+                const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 row.innerHTML = `
                     <img class="msg-avatar" src="${avatarUrl}" alt="صورة">
                     <div class="message-bubble">
-                        <span class="msg-sender">${msg.username}</span>
+                        <span class="msg-sender">${msg.username} 👑</span>
                         <span class="msg-text">${msg.text}</span>
+                        <div class="msg-footer">
+                            ${isMe ? '<span class="msg-ticks">✓✓</span>' : ''}
+                            <span class="msg-time">${timeStr}</span>
+                        </div>
                     </div>
                 `;
                 container.appendChild(row);
@@ -322,7 +368,6 @@ body::before {
 
     function openEditModal() {
         document.getElementById('msg-action-menu').style.display = 'none';
-        document.getElementById('editModalInput').value = currentSelectedMessageText;
         document.getElementById('custom-edit-modal').style.display = 'flex';
     }
 
@@ -330,19 +375,27 @@ body::before {
         document.getElementById('custom-edit-modal').style.display = 'none';
     }
 
+    function copyMessageText() {
+        document.getElementById('msg-action-menu').style.display = 'none';
+        navigator.clipboard.writeText(currentSelectedText).then(() => {
+            alert('📋 تم نسخ النص بنجاح!');
+        });
+    }
+
     async function saveEditedMessage() {
         const newText = document.getElementById('editModalInput').value.trim();
         if (!newText) return;
-
-        // محاكاة وتحديث الرسالة محلياً وإرسالها
+        if (currentSelectedElement) {
+            currentSelectedElement.querySelector('.msg-text').textContent = newText;
+        }
         closeEditModal();
-        fetchMessages();
     }
 
     async function deleteMessage() {
         document.getElementById('msg-action-menu').style.display = 'none';
-        // حذف الرسالة محلياً وتحديث القائمة
-        fetchMessages();
+        if (currentSelectedElement) {
+            currentSelectedElement.remove();
+        }
     }
 
     document.getElementById('messageInput').addEventListener('keypress', function (e) {
