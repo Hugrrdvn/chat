@@ -21,7 +21,7 @@ class Message(db.Model):
     text = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-# جدول الأعضاء الحقيقيين المتصلين
+# جدول الأعضاء الحقيقيين والمتصلين
 class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
@@ -30,9 +30,15 @@ class Member(db.Model):
 with app.app_context():
     db.create_all()
 
+# صفحة تسجيل الدخول (الصفحة الرئيسية)
 @app.route('/')
-def index():
+def login():
     return render_template('index.html')
+
+# صفحة الشات الملكي
+@app.route('/chat')
+def chat_page():
+    return render_template('chat.html')
 
 @app.route('/messages', methods=['GET', 'POST'])
 def handle_messages():
@@ -48,12 +54,10 @@ def handle_messages():
             return jsonify({"status": "success"})
         return jsonify({"status": "error", "message": "النص فارغ"})
     else:
-        # جلب كل الرسائل القديمة والجديدة المحفوظة للأبد بترتيب تصاعدي
         messages = Message.query.order_by(Message.id.asc()).all()
         result = [{"id": m.id, "username": m.username, "text": m.text} for m in messages]
         return jsonify(result)
 
-# مسار لتسجيل حضور المستخدم وحساب الأعضاء الحقيقيين
 @app.route('/members', methods=['GET', 'POST'])
 def handle_members():
     if request.method == 'POST':
@@ -69,11 +73,10 @@ def handle_members():
             db.session.commit()
             return jsonify({"status": "success"})
     
-    # جلب جميع الأعضاء المسجلين في قاعدة البيانات
     all_members = Member.query.all()
     members_list = [{"username": m.username} for m in all_members]
     return jsonify({
-        "total_members": len(all_members) + 1325,  # عدد افتراضي فخم + الأعضاء الحقيقيين
+        "total_members": len(all_members) + 1325,
         "online_count": len(all_members),
         "members": members_list
     })
