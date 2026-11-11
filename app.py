@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-# إعداد قاعدة البيانات من متغير البيئة DATABASE_URL في Render
+# إعداد قاعدة البيانات وتصحيح الرابط تلقائياً ليتوافق مع Render
 db_url = os.environ.get("DATABASE_URL")
 if db_url and db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
@@ -14,12 +14,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# نموذج جدول الرسائل في قاعدة البيانات
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False)
     text = db.Column(db.Text, nullable=False)
-    avatar = db.Column(db.String(300), nullable=True)
 
 with app.app_context():
     db.create_all()
@@ -32,25 +30,19 @@ def index():
 def handle_messages():
     if request.method == 'POST':
         data = request.json
-        new_msg = Message(
-            username=data.get('username', 'أحمد محمد'),
-            text=data.get('text', ''),
-            avatar=data.get('avatar', '')
-        )
-        db.session.add(new_msg)
-        db.session.commit()
-        return jsonify({"status": "success", "id": new_msg.id})
+        if data and data.get('text'):
+            new_msg = Message(
+                username=data.get('username', 'زائر ملكي'),
+                text=data.get('text')
+            )
+            db.session.add(new_msg)
+            db.session.commit()
+            return jsonify({"status": "success"})
+        return jsonify({"status": "error", "message": "النص فارغ"})
     
     else:
         messages = Message.query.all()
-        result = []
-        for m in messages:
-            result.append({
-                "id": m.id,
-                "username": m.username,
-                "text": m.text,
-                "avatar": m.avatar
-            })
+        result = [{"id": m.id, "username": m.username, "text": m.text} for m in messages]
         return jsonify(result)
 
 if __name__ == '__main__':
